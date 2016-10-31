@@ -10,12 +10,19 @@ namespace _3DGame
     public class Game1: Game
     {
         GraphicsDeviceManager graphics;
-        SpriteBatch spriteBatch;
+        Model model;
+        Vector3 camTarget;
+        Vector3 camPosition;
+        Matrix projectionMatrix;
+        Matrix viewMatrix;
+        Matrix worldMatrix;
 
+        bool orbit;
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
+
         }
 
         /// <summary>
@@ -29,6 +36,15 @@ namespace _3DGame
             // TODO: Add your initialization logic here
 
             base.Initialize();
+            camTarget = new Vector3(0f, 0f, 0f);
+            camPosition = new Vector3(0f, 0f, -30f);
+
+            projectionMatrix = Matrix.CreatePerspectiveFieldOfView(
+                MathHelper.ToRadians(45f),
+                GraphicsDevice.DisplayMode.AspectRatio, 1f, 1000f);
+
+            viewMatrix = Matrix.CreateLookAt(camPosition, camTarget, Vector3.Up);
+            worldMatrix = Matrix.CreateWorld(camTarget, Vector3.Forward, Vector3.Up);
         }
 
         /// <summary>
@@ -37,8 +53,8 @@ namespace _3DGame
         /// </summary>
         protected override void LoadContent()
         {
+            model = Content.Load<Model>("sinon");
             // Create a new SpriteBatch, which can be used to draw textures.
-            spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
         }
@@ -61,7 +77,47 @@ namespace _3DGame
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
+            if (Keyboard.GetState().IsKeyDown(Keys.Left))
+            {
+                camPosition.X += 1f;
+                camTarget.X += 1f;
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.Right))
+            {
+                camPosition.X -= 1f;
+                camTarget.X -= 1f;
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.Up))
+            {
+                camPosition.Y += 1f;
+                camTarget.Y += 1f;
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.Down))
+            {
+                camPosition.Y -= 1f;
+                camTarget.Y -= 1f;
+            }
 
+            if (Keyboard.GetState().IsKeyDown(Keys.Z))
+            {
+                camPosition.Z += 1f;
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.X))
+            {
+                camPosition.Z -= 1f;
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.Space))
+            {
+                orbit = !orbit;
+            }
+            if (orbit)
+            {
+                Matrix rotationMatrix = Matrix.CreateRotationY(
+                    MathHelper.ToRadians(1f));
+                camPosition = Vector3.Transform(camPosition, rotationMatrix);
+            }
+
+            viewMatrix = Matrix.CreateLookAt(camPosition, camTarget, Vector3.Up);
             // TODO: Add your update logic here
 
             base.Update(gameTime);
@@ -75,6 +131,22 @@ namespace _3DGame
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
+            RasterizerState rasterizerState = new RasterizerState();
+            rasterizerState.CullMode = CullMode.None;
+            //GraphicsDevice.RasterizerState = rasterizerState;
+
+            foreach (ModelMesh mesh in model.Meshes)
+            {
+                foreach (BasicEffect effect in mesh.Effects)
+                {
+                    effect.EnableDefaultLighting();
+                    effect.PreferPerPixelLighting = true;
+                    effect.World = worldMatrix;
+                    effect.View = viewMatrix;
+                    effect.Projection = projectionMatrix;
+                }
+                mesh.Draw();
+            }
             // TODO: Add your drawing code here
 
             base.Draw(gameTime);
