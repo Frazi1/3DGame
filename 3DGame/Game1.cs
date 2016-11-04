@@ -27,7 +27,6 @@ namespace _3DGame
             camera.CamTarget = new Vector3(0, 0, 0);
             camera.WorldMatrix = Matrix.CreateWorld(camera.CamPosition, Vector3.Forward, Vector3.Up);
             Components.Add(camera);
-            model.
         }
 
         protected override void LoadContent()
