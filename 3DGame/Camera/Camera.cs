@@ -29,9 +29,13 @@ namespace _3DGame
 
         public override void Initialize()
         {
-            ViewMatrix = Matrix.Identity;
+            ViewMatrix = Matrix.CreateLookAt(CamPosition, CamTarget, Vector3.Up);
             ProjectionMatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(ViewAngle), AspectRatio, NearClip, FarClip);
-            WorldMatrix = Matrix.CreateWorld(CamPosition,Vector3.Forward, Vector3.Up);
+            WorldMatrix = /*Matrix.CreateWorld(CamTarget, Vector3.Forward, Vector3.Up);*/
+                Matrix.Identity;
+
+            //ViewMatrix=Matrix.Identity;
+            //ProjectionMatrix=Matrix.Identity;;
 
             base.Initialize();
         }
@@ -39,8 +43,8 @@ namespace _3DGame
         public override void Update(GameTime gameTime)
         {
             ViewMatrix = Matrix.CreateLookAt(CamPosition, CamTarget, Vector3.Up);
-            //ProjectionMatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(ViewAngle), AspectRatio, NearClip, FarClip);
-            //WorldMatrix = Matrix.CreateWorld(CamPosition, Vector3.Forward, Vector3.Up);
+            ProjectionMatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(ViewAngle), AspectRatio, NearClip, FarClip);
+            //WorldMatrix = Matrix.CreateWorld(CamTarget, Vector3.Forward, Vector3.Up);
 
             base.Update(gameTime);
         }

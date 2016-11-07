@@ -26,12 +26,12 @@ namespace _3DGame
             if (Keyboard.GetState().IsKeyDown(Keys.Left))
             {
                 CamPosition.X += 1f;
-                CamTarget.X += 1f;
+                //CamTarget.X += 1f;
             }
             if (Keyboard.GetState().IsKeyDown(Keys.Right))
             {
                 CamPosition.X -= 1f;
-                CamTarget.X -= 1f;
+                //CamTarget.X -= 1f;
             }
             if (Keyboard.GetState().IsKeyDown(Keys.Up))
             {
@@ -63,7 +63,7 @@ namespace _3DGame
                 CamPosition = Vector3.Transform(CamPosition, rotationMatrix);
             }
 
-            //ViewMatrix = Matrix.CreateLookAt(CamPosition, CamTarget, Vector3.Up);
+            ViewMatrix = Matrix.CreateLookAt(CamPosition, CamTarget, Vector3.Up);
         }
     }
 }
