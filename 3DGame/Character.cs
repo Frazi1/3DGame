@@ -12,12 +12,19 @@ namespace _3DGame
     public class Character
     {
         public Model Model { get; set; }
+        float angle;
+
+
 
         public void Initialize(ContentManager contentManager)
         {
             Model = contentManager.Load<Model>("sinon");
         }
 
+        public void Update(GameTime gameTime)
+        {
+            angle += (float)gameTime.ElapsedGameTime.TotalSeconds;
+        }
 
         public void Draw(Camera camera)
         {
@@ -28,13 +35,31 @@ namespace _3DGame
                     basicEffect.EnableDefaultLighting();
                     basicEffect.PreferPerPixelLighting = true;
 
-                    basicEffect.World = camera.WorldMatrix;
+                    basicEffect.World = GetWorldMatrix();
                     basicEffect.View = camera.ViewMatrix;
-                    basicEffect.Projection = camera.ProjectionMatrix * Matrix.CreateScale(0.2f, 0.2f, 0.2f);
+                    basicEffect.Projection = camera.ProjectionMatrix * Matrix.CreateScale(0.1f, 0.1f, 0.1f);
                 }
                 mesh.Draw();
             }
 
+        }
+
+        private Matrix GetWorldMatrix()
+        {
+            const float circleRadius = 8;
+            const float heightOffGround = 3;
+
+            // this matrix moves the model "out" from the origin
+            Matrix translationMatrix = Matrix.CreateTranslation(
+                circleRadius, 0, heightOffGround);
+
+            // this matrix rotates everything around the origin
+            Matrix rotationMatrix = Matrix.CreateRotationY(angle);
+
+            // We combine the two to have the model move in a circle:
+            Matrix combined = translationMatrix * rotationMatrix;
+
+            return combined;
         }
     }
 }

@@ -13,6 +13,7 @@ namespace _3DGame
         GraphicsDeviceManager graphics;
         Character character;
         Camera camera;
+        Matrix World = Matrix.Identity;
 
         //floor
         VertexPositionNormalTexture[] floorVertecies;
@@ -22,6 +23,12 @@ namespace _3DGame
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
+            graphics.IsFullScreen = true;
+            graphics.PreferMultiSampling = true;
+            graphics.PreferredBackBufferHeight = 1080;
+            graphics.PreferredBackBufferWidth = 1920;
+            //graphics.PreferredBackBufferHeight = GraphicsDevice.Viewport.Height;
+            //graphics.PreferredBackBufferWidth = GraphicsDevice.Viewport.Width;
             Content.RootDirectory = "Content";
 
         }
@@ -34,7 +41,7 @@ namespace _3DGame
             {
                 CamPosition = new Vector3(0, 130, -150),
                 CamTarget = new Vector3(0f, 0f, 0f),
-                WorldMatrix = Matrix.CreateWorld(new Vector3(0, 0, 0), Vector3.Forward, Vector3.Up)
+                //WorldMatrix = Matrix.CreateWorld(new Vector3(0, 0, 0), Vector3.Forward, Vector3.Up)
                 // {X:0 Y:143,3337 Z:-499,9992}
                 //camera.CamPosition = new Vector3(0,0,6);
             };
@@ -45,6 +52,12 @@ namespace _3DGame
             character.Initialize(Content);
 
             //Floor Initialization
+            InitializeFloor();
+
+        }
+
+        private void InitializeFloor()
+        {
             floorVertecies = new VertexPositionNormalTexture[6];
 
             floorVertecies[0].Position = new Vector3(-20, -20, 0);
@@ -66,7 +79,6 @@ namespace _3DGame
             floorVertecies[5].TextureCoordinate = floorVertecies[2].TextureCoordinate;
 
             floorBasicEffect = new BasicEffect(GraphicsDevice);
-
         }
 
         protected override void LoadContent()
@@ -82,6 +94,7 @@ namespace _3DGame
         protected override void Update(GameTime gameTime)
         {
             //camera.Update(gameTime);
+            character.Update(gameTime);
             base.Update(gameTime);
         }
 
@@ -91,7 +104,7 @@ namespace _3DGame
 
             RasterizerState rasterizerState = new RasterizerState();
             rasterizerState.CullMode = CullMode.None;
-            //GraphicsDevice.RasterizerState = rasterizerState;
+            GraphicsDevice.RasterizerState = rasterizerState;
 
             //foreach (ModelMesh mesh in model.Meshes)
             //{
@@ -114,21 +127,24 @@ namespace _3DGame
         {
             var cameraLookAtVector = Vector3.Zero;
             var cameraUpVector = Vector3.UnitZ;
+            //var cameraUpVector = Vector3.Cross(Vector3.Up, Vector3.UnitZ);
 
             floorBasicEffect.View = Matrix.CreateLookAt(
                 camera.CamPosition, cameraLookAtVector, cameraUpVector);
 
-            float aspectRatio =
-                graphics.PreferredBackBufferWidth / (float)graphics.PreferredBackBufferHeight;
-            float fieldOfView = Microsoft.Xna.Framework.MathHelper.PiOver4;
-            float nearClipPlane = 1;
-            float farClipPlane = 1000;
+            //float aspectRatio =
+            //    graphics.PreferredBackBufferWidth / (float)graphics.PreferredBackBufferHeight;
+            //float fieldOfView = MathHelper.PiOver4;
+            //float nearClipPlane = 1;
+            //float farClipPlane = 1000;
 
-            floorBasicEffect.Projection = Matrix.CreatePerspectiveFieldOfView(
-                fieldOfView, aspectRatio, nearClipPlane, farClipPlane);
+            //floorBasicEffect.Projection = Matrix.CreatePerspectiveFieldOfView(
+            //fieldOfView, aspectRatio, nearClipPlane, farClipPlane);
+            floorBasicEffect.Projection = camera.ProjectionMatrix;
 
             floorBasicEffect.TextureEnabled = true;
             floorBasicEffect.Texture = checkerboardTexture2D;
+            //floorBasicEffect.View = camera.ViewMatrix;
 
             foreach (var pass in floorBasicEffect.CurrentTechnique.Passes)
             {
