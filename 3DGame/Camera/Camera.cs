@@ -15,7 +15,6 @@ namespace _3DGame
         public Vector3 CamPosition;
         public Matrix ProjectionMatrix { get; protected set; }
         public Matrix ViewMatrix { get; protected set; }
-        //public Matrix WorldMatrix { get; set; }
         public float AspectRatio => Game.GraphicsDevice.Viewport.AspectRatio;
         public const float NearClip = 1.0f;
         public const float FarClip = 1000.0f;

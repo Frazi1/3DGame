@@ -16,7 +16,7 @@ namespace _3DGame
 
         public override void Update(GameTime gameTime)
         {
-            UpdateCameraPosition();
+            UpdateCameraPosition1();
 
             base.Update(gameTime);
         }
@@ -64,6 +64,49 @@ namespace _3DGame
             }
 
             ViewMatrix = Matrix.CreateLookAt(CamPosition, CamTarget, Vector3.Up);
+        }
+
+        private void UpdateCameraPosition1()
+        {
+            Matrix rotationMatrix = Matrix.Identity;
+
+            if (Keyboard.GetState().IsKeyDown(Keys.Left))
+            {
+                rotationMatrix = Matrix.CreateRotationY(0.01f);
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.Right))
+            {
+                rotationMatrix = Matrix.CreateRotationY(-0.01f);
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.Up))
+            {
+                rotationMatrix = Matrix.CreateRotationX(0.01f);
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.Down))
+            {
+                rotationMatrix = Matrix.CreateRotationX(-0.01f);
+            }
+
+            if (Keyboard.GetState().IsKeyDown(Keys.Z))
+            {
+                rotationMatrix = Matrix.CreateTranslation(Vector3.Backward);
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.X))
+            {
+                rotationMatrix = Matrix.CreateTranslation(Vector3.Forward);
+
+            }
+            //if (Keyboard.GetState().IsKeyDown(Keys.Space))
+            //{
+            //    Orbit = !Orbit;
+            //}
+            //if (Orbit)
+            //{
+            //    rotationMatrix = Matrix.CreateRotationY(
+            //        MathHelper.ToRadians(1f));
+            //}
+            CamPosition = Vector3.Transform(CamPosition, rotationMatrix);
+
         }
     }
 }

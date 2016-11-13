@@ -1,8 +1,11 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-
+using static _3DGame.GameEvents;
 namespace _3DGame
 {
     /// <summary>
@@ -13,7 +16,9 @@ namespace _3DGame
         GraphicsDeviceManager graphics;
         Character character;
         Camera camera;
-        Matrix World = Matrix.Identity;
+        //Matrix World = Matrix.Identity;
+        List<Road> roads = new List<Road>();
+        Box box;
 
         //floor
         VertexPositionNormalTexture[] floorVertecies;
@@ -23,14 +28,13 @@ namespace _3DGame
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
-            graphics.IsFullScreen = true;
+            graphics.IsFullScreen = false;
             graphics.PreferMultiSampling = true;
-            graphics.PreferredBackBufferHeight = 1080;
-            graphics.PreferredBackBufferWidth = 1920;
+            graphics.PreferredBackBufferHeight = /*1080*/ 600;
+            graphics.PreferredBackBufferWidth = /*1920*/ 800;
             //graphics.PreferredBackBufferHeight = GraphicsDevice.Viewport.Height;
             //graphics.PreferredBackBufferWidth = GraphicsDevice.Viewport.Width;
             Content.RootDirectory = "Content";
-
         }
 
         protected override void Initialize()
@@ -47,39 +51,31 @@ namespace _3DGame
             };
             Components.Add(camera);
 
+
+            //Subcribe to Events
+            EventsSubscribe();
+
             //Model Initialization
             character = new Character();
             character.Initialize(Content);
 
+            //Road Initialization
+            CreateRoads();
+
+
             //Floor Initialization
-            InitializeFloor();
+            //InitializeFloor();
 
+
+            //Box
+            box = new Box(Settings.StartingPlayerPosition + Vector3.Forward * 10, Content);
         }
 
-        private void InitializeFloor()
+        private void EventsSubscribe()
         {
-            floorVertecies = new VertexPositionNormalTexture[6];
-
-            floorVertecies[0].Position = new Vector3(-20, -20, 0);
-            floorVertecies[1].Position = new Vector3(-20, 20, 0);
-            floorVertecies[2].Position = new Vector3(20, -20, 0);
-
-            floorVertecies[3].Position = floorVertecies[1].Position;
-            floorVertecies[4].Position = new Vector3(20, 20, 0);
-            floorVertecies[5].Position = floorVertecies[2].Position;
-
-            int repetitions = 20;
-
-            floorVertecies[0].TextureCoordinate = new Vector2(0, 0);
-            floorVertecies[1].TextureCoordinate = new Vector2(0, repetitions);
-            floorVertecies[2].TextureCoordinate = new Vector2(repetitions, 0);
-
-            floorVertecies[3].TextureCoordinate = floorVertecies[1].TextureCoordinate;
-            floorVertecies[4].TextureCoordinate = new Vector2(repetitions, repetitions);
-            floorVertecies[5].TextureCoordinate = floorVertecies[2].TextureCoordinate;
-
-            floorBasicEffect = new BasicEffect(GraphicsDevice);
+            GameEvents.ObjectCollided += GameEvents_ObjectCollided;
         }
+
 
         protected override void LoadContent()
         {
@@ -95,6 +91,8 @@ namespace _3DGame
         {
             //camera.Update(gameTime);
             character.Update(gameTime);
+            if (box != null)
+                Collider.CheckCollision(character, box);
             base.Update(gameTime);
         }
 
@@ -106,31 +104,35 @@ namespace _3DGame
             rasterizerState.CullMode = CullMode.None;
             GraphicsDevice.RasterizerState = rasterizerState;
 
-            //foreach (ModelMesh mesh in model.Meshes)
-            //{
-            //    foreach (BasicEffect effect in mesh.Effects)
-            //    {
-            //        effect.EnableDefaultLighting();
-            //        effect.PreferPerPixelLighting = true;
-            //        effect.World = Matrix.Identity;
-            //        effect.View = camera.ViewMatrix;
-            //        effect.Projection = camera.ProjectionMatrix;
-            //    }
-            //    mesh.Draw();
-            //}
+            //DrawModel(road, camera.ProjectionMatrix,camera.ViewMatrix,character.GetWorldMatrix() * Matrix.CreateTranslation(new Vector3(-.5f,-0.35f,0)));
+
             character.Draw(camera);
-            DrawFloor();
+            DrawRoads();
+            if (box != null)
+                Drawer.DrawModel(box.Model, camera, box.WorldMatrix, 0.05f);
+
+            //DrawFloor();
             base.Draw(gameTime);
         }
 
-        protected void DrawFloor()
+        private void DrawRoads()
+        {
+            foreach (Road road in roads)
+            {
+                road.Draw(camera);
+            }
+        }
+        private void DrawFloor()
         {
             var cameraLookAtVector = Vector3.Zero;
-            var cameraUpVector = Vector3.UnitZ;
+            //var cameraUpVector = Vector3.UnitZ;
+            var cameraUpVector = Vector3.Up;
             //var cameraUpVector = Vector3.Cross(Vector3.Up, Vector3.UnitZ);
 
-            floorBasicEffect.View = Matrix.CreateLookAt(
-                camera.CamPosition, cameraLookAtVector, cameraUpVector);
+            //floorBasicEffect.View = Matrix.CreateLookAt(
+            //    camera.CamPosition, cameraLookAtVector, cameraUpVector);
+            floorBasicEffect.View = camera.ViewMatrix;
+
 
             //float aspectRatio =
             //    graphics.PreferredBackBufferWidth / (float)graphics.PreferredBackBufferHeight;
@@ -157,5 +159,55 @@ namespace _3DGame
                     2);
             }
         }
+
+        private void InitializeFloor()
+        {
+            floorVertecies = new VertexPositionNormalTexture[6];
+
+            floorVertecies[0].Position = new Vector3(-20, -20, 0);
+            floorVertecies[1].Position = new Vector3(-20, 20, 0);
+            floorVertecies[2].Position = new Vector3(20, -20, 0);
+
+            floorVertecies[3].Position = floorVertecies[1].Position;
+            floorVertecies[4].Position = new Vector3(20, 20, 0);
+            floorVertecies[5].Position = floorVertecies[2].Position;
+
+            int repetitions = 20;
+
+            floorVertecies[0].TextureCoordinate = new Vector2(0, 0);
+            floorVertecies[1].TextureCoordinate = new Vector2(0, repetitions);
+            floorVertecies[2].TextureCoordinate = new Vector2(repetitions, 0);
+
+            floorVertecies[3].TextureCoordinate = floorVertecies[1].TextureCoordinate;
+            floorVertecies[4].TextureCoordinate = new Vector2(repetitions, repetitions);
+            floorVertecies[5].TextureCoordinate = floorVertecies[2].TextureCoordinate;
+
+            floorBasicEffect = new BasicEffect(GraphicsDevice);
+        }
+        private void CreateRoads()
+        {
+            int count = 5;
+            float roadLength = 3.4f;
+            for (int i = 0; i < count; i++)
+            {
+                Road r = new Road(Settings.StartingPlayerPosition + new Vector3(0, 0, roadLength * i));
+                roads.Add(r);
+                r.Initialize(Content);
+            }
+        }
+
+
+        //Events Methods
+        private void GameEvents_ObjectCollided(ICollidable arg1, ICollidable arg2)
+        {
+            box = null;
+        }
+
+
     }
+
+
+
+
+
 }
