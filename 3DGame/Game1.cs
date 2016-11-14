@@ -22,8 +22,11 @@ namespace _3DGame
 
         //floor
         VertexPositionNormalTexture[] floorVertecies;
-        Texture2D checkerboardTexture2D;
+        //Texture2D checkerboardTexture2D;
         BasicEffect floorBasicEffect;
+        BasicEffect lineEffect;
+        BasicEffect lineEffect1;
+
 
         public Game1()
         {
@@ -68,7 +71,19 @@ namespace _3DGame
 
 
             //Box
-            box = new Box(Settings.StartingPlayerPosition + Vector3.Forward * 10, Content);
+            box = new Box(Settings.StartingPlayerPosition, Content);
+            //box.AddToPosition(Vector3.Forward * 10 + Vector3.Left*10);
+
+            //CharBoxEffect
+            lineEffect = new BasicEffect(GraphicsDevice);
+            lineEffect.LightingEnabled = false;
+            lineEffect.TextureEnabled = false;
+            lineEffect.VertexColorEnabled = true;
+            //BoxBoxEffect
+            lineEffect1 = new BasicEffect(GraphicsDevice);
+            lineEffect1.LightingEnabled = false;
+            lineEffect1.TextureEnabled = false;
+            lineEffect1.VertexColorEnabled = true;
         }
 
         private void EventsSubscribe()
@@ -80,7 +95,7 @@ namespace _3DGame
         protected override void LoadContent()
         {
             //model = Content.Load<Model>("sinon");
-            checkerboardTexture2D = Content.Load<Texture2D>("checkerboard");
+            //checkerboardTexture2D = Content.Load<Texture2D>("checkerboard");
         }
 
         protected override void UnloadContent()
@@ -92,7 +107,7 @@ namespace _3DGame
             //camera.Update(gameTime);
             character.Update(gameTime);
             if (box != null)
-                Collider.CheckCollision(character, box);
+                //Collider.CheckCollision(character, box);
             base.Update(gameTime);
         }
 
@@ -108,10 +123,15 @@ namespace _3DGame
 
             character.Draw(camera);
             DrawRoads();
+
             if (box != null)
                 Drawer.DrawModel(box.Model, camera, box.WorldMatrix, 0.05f);
 
             //DrawFloor();
+
+            //Draw BB's
+            Drawer.DrawBoundingBox(BoundingBoxBuffers.CreateBoundingBoxBuffers(character.BoundingBox, GraphicsDevice), lineEffect, GraphicsDevice, camera.ViewMatrix, camera.ProjectionMatrix);
+            Drawer.DrawBoundingBox(BoundingBoxBuffers.CreateBoundingBoxBuffers(box.BoundingBox, GraphicsDevice), lineEffect1, GraphicsDevice, camera.ViewMatrix, camera.ProjectionMatrix);
             base.Draw(gameTime);
         }
 

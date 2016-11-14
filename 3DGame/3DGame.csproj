@@ -40,11 +40,11 @@
   <ItemGroup>
     <Compile Include="Camera\Camera.cs" />
     <Compile Include="Camera\FirstPersonCamera.cs" />
-    <Compile Include="Drawer.cs" />
+    <Compile Include="Utils\Drawer.cs" />
     <Compile Include="Engine\Collider.cs" />
+    <Compile Include="Utils\VertexElementExtractor.cs" />
     <Compile Include="Events.cs" />
     <Compile Include="Interfaces\IGameObject.cs" />
-    <Compile Include="ExtensionMethods.cs" />
     <Compile Include="Game Objects\Box.cs" />
     <Compile Include="Game Objects\Character.cs" />
     <Compile Include="Game1.cs" />

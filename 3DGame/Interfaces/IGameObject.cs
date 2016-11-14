@@ -4,6 +4,6 @@ namespace _3DGame
 {
     public interface IGameObject
     {
-        Matrix WorldMatrix { get; }
+        Matrix WorldMatrix { get; set; }
     }
 }

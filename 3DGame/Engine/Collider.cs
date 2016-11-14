@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -111,9 +112,46 @@ namespace _3DGame
             return new BoundingBox(min, max);
         }
 
-        private static float SelectMin(float a, float b) => a < b ? a : b;
+        
 
-        private static float SelectMax(float a, float b) => a > b ? a : b;
+        private static BoundingBox? GetBoundingBox(ModelMeshPart meshPart, Matrix transform)
+        {
+            if (meshPart.VertexBuffer == null)
+                return null;
 
+            Vector3[] positions = VertexElementExtractor.GetVertexElement(meshPart, VertexElementUsage.Position);
+            if (positions == null)
+                return null;
+
+            Vector3[] transformedPositions = new Vector3[positions.Length];
+            Vector3.Transform(positions, ref transform, transformedPositions);
+
+            return BoundingBox.CreateFromPoints(transformedPositions);
+        }
+
+        public static BoundingBox CreateBoundingBox(Model model)
+        {
+            Matrix[] boneTransforms = new Matrix[model.Bones.Count];
+            model.CopyAbsoluteBoneTransformsTo(boneTransforms);
+
+            BoundingBox result = new BoundingBox();
+            foreach (ModelMesh mesh in model.Meshes)
+                foreach (ModelMeshPart meshPart in mesh.MeshParts)
+                {
+                    BoundingBox? meshPartBoundingBox = GetBoundingBox(meshPart, boneTransforms[mesh.ParentBone.Index]);
+                    if (meshPartBoundingBox != null)
+                        result = BoundingBox.CreateMerged(result, meshPartBoundingBox.Value);
+                }
+            return result;
+        }
+
+        public static void MoveBoundingBox(BoundingBox boundingBox, Vector3 direction, float amount)
+        {
+            Vector3[] corners = boundingBox.GetCorners();
+            for (int i = 0; i < corners.Length; i++)
+            {
+                corners[i] += amount * direction;
+            }
+        }
     }
 }

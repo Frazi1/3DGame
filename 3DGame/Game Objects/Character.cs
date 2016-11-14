@@ -20,10 +20,10 @@ namespace _3DGame
         {
             Model = contentManager.Load<Model>("sinon");
             direction = Vector3.Forward;
-            //BoundingBox = Collider.CreateBoundingBox(Model);
-            Vector3 startingPos = Settings.StartingPlayerPosition + Vector3.Up * Settings.YOffset + Vector3.Left*Settings.XOffset;
+            Vector3 startingPos = Settings.StartingPlayerPosition + Vector3.Up * Settings.YOffset + Vector3.Left * Settings.XOffset;
             worldMatrix = Matrix.CreateWorld(startingPos, Vector3.Forward, Vector3.Up);
-            BoundingBox = Collider.UpdateBoundingBox(Model, WorldMatrix);
+            //BoundingBox = Collider.UpdateBoundingBox(Model, WorldMatrix);
+            BoundingBox = Collider.CreateBoundingBox(Model);
         }
 
         public void Update(GameTime gameTime)
@@ -34,6 +34,7 @@ namespace _3DGame
 
         private void UpdateCharacterPosition()
         {
+            float amount = 0.1f;
 
             if (Keyboard.GetState().IsKeyDown(Keys.W))
             {
@@ -63,7 +64,9 @@ namespace _3DGame
             {
                 Vector3.Transform(direction, Matrix.CreateRotationX(0.01f));
             }
-            BoundingBox = Collider.UpdateBoundingBox(Model, WorldMatrix);
+            //BoundingBox = Collider.UpdateBoundingBox(Model, worldMatrix);
+            //BoundingBox = Collider.CreateBoundingBox(Model);
+            Collider.MoveBoundingBox(BoundingBox,direction,amount);
 
 
         }
@@ -91,7 +94,12 @@ namespace _3DGame
 
         public BoundingBox BoundingBox { get; set; }
 
-        public Matrix WorldMatrix => worldMatrix;
+        public Matrix WorldMatrix
+        {
+            get { return worldMatrix; }
+            set { worldMatrix = value; }
+        }
+
         public Vector3 Direction => direction;
     }
 }
