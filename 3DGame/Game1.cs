@@ -22,7 +22,7 @@ namespace _3DGame
 
         //floor
         VertexPositionNormalTexture[] floorVertecies;
-        //Texture2D checkerboardTexture2D;
+        Texture2D checkerboardTexture2D;
         BasicEffect floorBasicEffect;
         BasicEffect lineEffect;
         BasicEffect lineEffect1;
