@@ -52,16 +52,7 @@ namespace _3DGame
             {
                 CamPosition.Z -= 1f;
             }
-            if (Keyboard.GetState().IsKeyDown(Keys.Space))
-            {
-                Orbit = !Orbit;
-            }
-            if (Orbit)
-            {
-                Matrix rotationMatrix = Matrix.CreateRotationY(
-                    MathHelper.ToRadians(1f));
-                CamPosition = Vector3.Transform(CamPosition, rotationMatrix);
-            }
+           
 
             ViewMatrix = Matrix.CreateLookAt(CamPosition, CamTarget, Vector3.Up);
         }
@@ -86,7 +77,6 @@ namespace _3DGame
             {
                 rotationMatrix = Matrix.CreateRotationX(-0.01f);
             }
-
             if (Keyboard.GetState().IsKeyDown(Keys.Z))
             {
                 rotationMatrix = Matrix.CreateTranslation(Vector3.Backward);
@@ -94,17 +84,8 @@ namespace _3DGame
             if (Keyboard.GetState().IsKeyDown(Keys.X))
             {
                 rotationMatrix = Matrix.CreateTranslation(Vector3.Forward);
-
             }
-            //if (Keyboard.GetState().IsKeyDown(Keys.Space))
-            //{
-            //    Orbit = !Orbit;
-            //}
-            //if (Orbit)
-            //{
-            //    rotationMatrix = Matrix.CreateRotationY(
-            //        MathHelper.ToRadians(1f));
-            //}
+
             CamPosition = Vector3.Transform(CamPosition, rotationMatrix);
 
         }

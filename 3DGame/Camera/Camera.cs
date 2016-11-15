@@ -19,7 +19,6 @@ namespace _3DGame
         public const float NearClip = 1.0f;
         public const float FarClip = 1000.0f;
         public const float ViewAngle = MathHelper.PiOver4;
-        public bool Orbit { get; set; } = false;
 
 
         public Camera(Game game) : base(game)

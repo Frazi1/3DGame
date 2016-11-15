@@ -9,21 +9,30 @@ using Microsoft.Xna.Framework.Input;
 
 namespace _3DGame
 {
-    public class Character: ICollidable, IGameObject
+    public class Character: IGameObject
     {
-        public Model Model { get; set; }
+        private Model model;
+        private bool isActive;
+
+        private BoundingBox boundingBox;
+        private BoundingSphere boundingSphere;
 
         private Vector3 direction;
-        private Matrix worldMatrix = Matrix.Identity;
+        private Vector3 position = Vector3.Zero;
+        private float rotation;
+
+        private Matrix rotationMatrix = Matrix.Identity;
+        private Matrix[] transforms;
+
+        #region Methods
 
         public void Initialize(ContentManager contentManager)
         {
             Model = contentManager.Load<Model>("sinon");
             direction = Vector3.Forward;
-            Vector3 startingPos = Settings.StartingPlayerPosition + Vector3.Up * Settings.YOffset + Vector3.Left * Settings.XOffset;
-            worldMatrix = Matrix.CreateWorld(startingPos, Vector3.Forward, Vector3.Up);
-            //BoundingBox = Collider.UpdateBoundingBox(Model, WorldMatrix);
-            BoundingBox = Collider.CreateBoundingBox(Model);
+            Transforms = Drawer.SetupEffectDefaults(Model);
+            IsActive = true;
+
         }
 
         public void Update(GameTime gameTime)
@@ -31,75 +40,117 @@ namespace _3DGame
             //angle += (float)gameTime.ElapsedGameTime.TotalSeconds;
             UpdateCharacterPosition();
         }
-
         private void UpdateCharacterPosition()
         {
             float amount = 0.1f;
 
             if (Keyboard.GetState().IsKeyDown(Keys.W))
             {
-                worldMatrix *= Matrix.CreateTranslation(new Vector3(0, 0, -0.1f) * direction);
+                Position += RotationMatrix.Forward * -amount;
             }
             if (Keyboard.GetState().IsKeyDown(Keys.S))
             {
-                worldMatrix *= Matrix.CreateTranslation(new Vector3(0, 0, 0.1f) * direction);
+                Position += RotationMatrix.Forward * amount;
+
             }
             if (Keyboard.GetState().IsKeyDown(Keys.A))
             {
-                //worldMatrix *= Matrix.CreateTranslation(Vector3.Cross(direction, new Vector3(-0.1f, 0, 0)));
-                worldMatrix *= Matrix.CreateTranslation(Vector3.Cross(Vector3.Up, direction) * new Vector3(-0.1f, 0, 0));
+                Position += Vector3.Cross(RotationMatrix.Up, RotationMatrix.Forward) * -amount;
             }
             if (Keyboard.GetState().IsKeyDown(Keys.D))
             {
-                //worldMatrix *= Matrix.CreateTranslation(Vector3.Cross(direction, new Vector3(0.1f, 0, 0)));
-                worldMatrix *= Matrix.CreateTranslation(Vector3.Cross(Vector3.Up, direction) * new Vector3(0.1f, 0, 0));
+                Position += Vector3.Cross(RotationMatrix.Up, RotationMatrix.Forward) * amount;
+
             }
 
             if (Keyboard.GetState().IsKeyDown(Keys.Q))
             {
                 Vector3.Transform(direction, Matrix.CreateRotationX(0.01f));
-                worldMatrix *= Matrix.CreateRotationY(0.01f);
+                //worldMatrix *= Matrix.CreateRotationY(0.01f);
             }
             if (Keyboard.GetState().IsKeyDown(Keys.E))
             {
-                Vector3.Transform(direction, Matrix.CreateRotationX(0.01f));
-            }
-            //BoundingBox = Collider.UpdateBoundingBox(Model, worldMatrix);
-            //BoundingBox = Collider.CreateBoundingBox(Model);
-            Collider.MoveBoundingBox(BoundingBox,direction,amount);
-
-
-        }
-
-        public void Draw(Camera camera)
-        {
-            foreach (ModelMesh mesh in Model.Meshes)
-            {
-                foreach (BasicEffect basicEffect in mesh.Effects)
-                {
-                    basicEffect.EnableDefaultLighting();
-                    basicEffect.PreferPerPixelLighting = true;
-
-                    //basicEffect.World = GetWorldMatrix();
-                    basicEffect.World = WorldMatrix * Matrix.CreateScale(0.1f, 0.1f, 0.1f);
-                    basicEffect.View = camera.ViewMatrix;
-                    basicEffect.Projection = camera.ProjectionMatrix;
-                }
-                mesh.Draw();
+                //Vector3.Transform(direction, Matrix.CreateRotationX(0.01f));
             }
 
+
         }
+        
+        #endregion
 
 
+        #region Properties
 
-        public BoundingBox BoundingBox { get; set; }
-
-        public Matrix WorldMatrix
-        {
-            get { return worldMatrix; }
-            set { worldMatrix = value; }
-        }
 
         public Vector3 Direction => direction;
+
+        public Matrix[] Transforms
+        {
+            get { return transforms; }
+            set { transforms = value; }
+        }
+
+        public float Rotation
+        {
+            get { return rotation; }
+            set
+            {
+                float newVal = value;
+                while (newVal >= MathHelper.TwoPi)
+                {
+                    newVal -= MathHelper.TwoPi;
+                }
+                while (newVal < 0)
+                {
+                    newVal += MathHelper.TwoPi;
+                }
+
+                if (rotation != newVal)
+                {
+                    rotation = newVal;
+                    RotationMatrix = Matrix.CreateRotationY(rotation);
+                }
+            }
+
+        }
+
+        public BoundingBox BoundingBox
+        {
+            get { return boundingBox; }
+            set { boundingBox = value; }
+        }
+
+        public BoundingSphere BoundingSphere
+        {
+            get { return boundingSphere; }
+            set { boundingSphere = value; }
+        }
+
+        public bool IsActive
+        {
+            get { return isActive; }
+            set { isActive = value; }
+        }
+
+
+        public Matrix RotationMatrix
+        {
+            get { return rotationMatrix; }
+            set { rotationMatrix = value; }
+        }
+
+        public Vector3 Position
+        {
+            get { return position; }
+            set { position = value; }
+        }
+
+        public Model Model
+        {
+            get { return model; }
+            set { model = value; }
+        }
+
+        #endregion
     }
 }

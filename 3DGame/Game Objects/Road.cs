@@ -9,40 +9,75 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace _3DGame
 {
-    public class Road
+    public class Road: IGameObject
     {
-        public Model Model { get; set; }
-        public Matrix World = Matrix.Identity;
-        public Vector3 Position;
+        private Model model;
+        private Matrix rotationMatrix = Matrix.Identity;
+        private Vector3 position = Vector3.Zero;
+        private Matrix[] transforms;
 
-        public Road(Vector3 position)
-        {
-            Position = position;
-            
-        }
+        private BoundingBox boundingBox;
+        private BoundingSphere boundingSphere;
+        private bool isActive;
 
-        public void Initialize(ContentManager contentManager)
+        #region Methods
+        public void Initialize(Vector3 position, ContentManager contentManager)
         {
             Model = contentManager.Load<Model>("roadV2");
-            World = Matrix.CreateWorld(Position, Vector3.Forward, Vector3.Up);
-        }
+            Position = position;
+            Transforms = Drawer.SetupEffectDefaults(Model);
+            IsActive = true;
 
-        public void Draw(Camera camera)
+            //World = Matrix.CreateWorld(Position, Vector3.Forward, Vector3.Up);
+        }
+        #endregion
+
+        #region Properties
+
+        public Model Model
         {
-            foreach (ModelMesh mesh in Model.Meshes)
-            {
-                foreach (BasicEffect basicEffect in mesh.Effects)
-                {
-                    basicEffect.EnableDefaultLighting();
-                    basicEffect.PreferPerPixelLighting = true;
-
-                    basicEffect.World = World;
-                    basicEffect.View = camera.ViewMatrix;
-                    basicEffect.Projection = camera.ProjectionMatrix;
-                }
-                mesh.Draw();
-            }
-
+            get { return model; }
+            set { model = value; }
         }
+
+        public Matrix RotationMatrix
+        {
+            get { return rotationMatrix; }
+            set { rotationMatrix = value; }
+        }
+
+        public Vector3 Position
+        {
+            get { return position; }
+            set { position = value; }
+        }
+
+        public Matrix[] Transforms
+        {
+            get { return transforms; }
+            set { transforms = value; }
+        }
+        
+
+        public BoundingBox BoundingBox
+        {
+            get { return boundingBox; }
+            set { boundingBox = value; }
+        }
+
+        public BoundingSphere BoundingSphere
+        {
+            get { return boundingSphere; }
+            set { boundingSphere = value; }
+        }
+
+        public bool IsActive
+        {
+            get { return isActive; }
+            set { isActive = value; }
+        }
+
+        #endregion
     }
+
 }

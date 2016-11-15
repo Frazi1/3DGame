@@ -6,47 +6,72 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace _3DGame
 {
-    public class Box: ICollidable, IGameObject
+    public class Box: IGameObject
     {
-        public Model Model { get; set; }
-        public BoundingBox BoundingBox { get; set; }
+        private BoundingBox boundingBox;
+        private BoundingSphere boundingSphere;
 
-        private Vector3 position;
-        public Matrix WorldMatrix { get; set; }
+        private Model model;
+        private Matrix rotationMatrix = Matrix.Identity;
+        private Vector3 position = Vector3.Zero;
+        private Matrix[] transforms;
+        private bool isActive;
 
-        public Box(Vector3 position, ContentManager contentManager)
-        {
-            //this.position = position;
-            this.position = Settings.StartingPlayerPosition + Vector3.Up * Settings.YOffset + Vector3.Left * Settings.XOffset + Vector3.Forward * 10;
-            Initialize(contentManager);
-            //WorldMatrix = Matrix.CreateWorld(position, Vector3.Forward, Vector3.Up);
-        }
-
-        public Box(ContentManager contentManager)
-        {
-            //WorldMatrix = Matrix.Identity;
-            position = Vector3.Zero;
-            Initialize(contentManager);
-        }
 
         public void Initialize(ContentManager contentManager)
         {
             Model = contentManager.Load<Model>("sinon");
-            UpdateWorld();
+            Transforms = Drawer.SetupEffectDefaults(Model);
+            IsActive = true;
+        }
+        #region Properties
+
+
+
+        public BoundingBox BoundingBox
+        {
+            get { return boundingBox; }
+            set { boundingBox = value; }
         }
 
-        public void AddToPosition(Vector3 offset)
+        public BoundingSphere BoundingSphere
         {
-            position += offset;
-            UpdateWorld();
+            get { return boundingSphere; }
+            set { boundingSphere = value; }
         }
 
-        private void UpdateWorld()
+        public bool IsActive
         {
-            WorldMatrix = Matrix.CreateWorld(position, Vector3.Forward, Vector3.Up);
-            //BoundingBox = Collider.UpdateBoundingBox(Model, WorldMatrix);
-            BoundingBox = Collider.CreateBoundingBox(Model);
+            get { return isActive; }
+            set { isActive = value; }
         }
+
+        public Model Model
+        {
+            get { return model; }
+            set { model = value; }
+        }
+
+        public Matrix RotationMatrix
+        {
+            get { return rotationMatrix; }
+            set { rotationMatrix = value; }
+        }
+
+        public Vector3 Position
+        {
+            get { return position; }
+            set { position = value; }
+        }
+
+        public Matrix[] Transforms
+        {
+            get { return transforms; }
+            set { transforms = value; }
+        }
+
+        #endregion
+
     }
 
 
