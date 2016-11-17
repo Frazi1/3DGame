@@ -17,8 +17,8 @@ namespace _3DGame
         GraphicsDeviceManager graphics;
         Character character;
         Camera camera;
-        readonly List<Road> roads = new List<Road>();
-        readonly List<Box> boxes = new List<Box>();
+        List<Road> roads = new List<Road>();
+        List<Box> boxes = new List<Box>();
 
 
         GameObjectCreator gameObjectCreator;
@@ -46,14 +46,17 @@ namespace _3DGame
             EventsSubscribe();
 
             //Model Initialization
-            character = new Character { Position = Vector3.Zero };
+            //character = new Character { Position = new Vector3(1, 0, 10) };
+            character = new Character { Position = new Vector3(10, 0, 10) };
             character.Initialize(Content);
 
             //Camera Initialization
-            camera = new ThirdPersonCamera(this)
+            camera = new ThirdPersonCamera(this, character)
             {
-                CamPosition = new Vector3(-100, 0, 100),
-                CamTarget = character.Position,
+                //Position = new Vector3(-100, 0, 100),
+                Position = new Vector3(0,10,80),
+                //Target = character.Position,
+                Target = new Vector3(0f, 0f, 10f)
             };
             Components.Add(camera);
 
@@ -67,7 +70,15 @@ namespace _3DGame
 
 
             //Box
-            boxes.Add(gameObjectCreator.CreateBox(character.Position + character.RotationMatrix.Forward * 2 + character.RotationMatrix.Right * 5));
+            //boxes.Add(gameObjectCreator.CreateBox());
+            boxes.Add(new Box() {Position = new Vector3(10,0,5)});
+            boxes[0].Initialize(Content);
+
+            //Bounding Spheres Renderer
+            BoundingSphereRenderer.Initialize(GraphicsDevice, 50);
+
+            //Set RasterizerState
+            GraphicsDevice.RasterizerState = new RasterizerState { CullMode = CullMode.None };
         }
 
         private void EventsSubscribe()
@@ -89,35 +100,40 @@ namespace _3DGame
         {
             character.Update(gameTime);
             Collider.CollisionDetection(character, boxes);
-            //if (box != null)
-            //    //Collider.CheckCollision(character, box);
+
             Reset();
             base.Update(gameTime);
+            Window.Title = camera.Position.ToString();
         }
 
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            RasterizerState rasterizerState = new RasterizerState();
-            rasterizerState.CullMode = CullMode.None;
-            GraphicsDevice.RasterizerState = rasterizerState;
+            //RasterizerState rasterizerState = new RasterizerState();
+            //rasterizerState.CullMode = CullMode.None;
+            //GraphicsDevice.RasterizerState = rasterizerState;
 
             DrawRoads();
 
             Matrix characterTransormsMatrix = character.RotationMatrix * Matrix.CreateTranslation(character.Position) *
                                               Matrix.CreateScale(CharacterScale);
-            Drawer.DrawModel(character.Model, characterTransormsMatrix, character.Transforms, camera);
+            character.World = characterTransormsMatrix;
 
+            character.DrawModel(camera);
+            character.DrawBoundingSphere(camera);
 
             for (int i = 0; i < boxes.Count; i++)
             {
                 var box = boxes[i];
-                if(!box.IsActive)
+                if (!box.IsActive)
                     continue;
                 Matrix boxTransformsMatrix = box.RotationMatrix * Matrix.CreateTranslation(box.Position) *
-                                             Matrix.CreateScale(CharacterScale);
-                Drawer.DrawModel(box.Model, boxTransformsMatrix, box.Transforms, camera);
+                                             Matrix.CreateScale(/*0.0001f*/CharacterScale);
+                box.World = boxTransformsMatrix;
+
+                box.DrawModel(camera);
+                box.DrawBoundingSphere(camera);
             }
 
             base.Draw(gameTime);
@@ -128,8 +144,14 @@ namespace _3DGame
             foreach (Road road in roads)
             {
                 Matrix roadTransformsMatrix = road.RotationMatrix * Matrix.CreateTranslation(road.Position);
-                Drawer.DrawModel(road.Model, roadTransformsMatrix, road.Transforms, camera);
+                //Drawer.DrawModel(road.Model, roadTransformsMatrix, road.Transforms, camera);
+                road.World = roadTransformsMatrix;
+                road.DrawModel(camera);
+
             }
+                roads[4].CreateBoundingSphere(1);
+                roads[4].DrawBoundingSphere(camera);
+
         }
 
         private void CreateRoads()
@@ -145,21 +167,30 @@ namespace _3DGame
             }
         }
 
-
-        public void Reset()
+        //Debug Methods
+        private void Reset()
         {
-            if(Keyboard.GetState().IsKeyDown(Keys.Enter))
+            if (Keyboard.GetState().IsKeyDown(Keys.Enter))
                 for (int i = 0; i < boxes.Count; i++)
                 {
                     boxes[i].IsActive = true;
                 }
         }
 
+        private void SetDebugText(string text)
+        {
+            Window.Title = text;
+        }
+
+
+
         //Events Methods
         private void GameEvents_ObjectCollided(ICollidable arg1, ICollidable arg2)
         {
             arg2.IsActive = false;
         }
+
+
 
 
     }

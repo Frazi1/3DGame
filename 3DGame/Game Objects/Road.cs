@@ -12,13 +12,18 @@ namespace _3DGame
     public class Road: IGameObject
     {
         private Model model;
-        private Matrix rotationMatrix = Matrix.Identity;
+
         private Vector3 position = Vector3.Zero;
-        private Matrix[] transforms;
 
         private BoundingBox boundingBox;
         private BoundingSphere boundingSphere;
+
         private bool isActive;
+
+        private Matrix rotationMatrix = Matrix.Identity;
+        private Matrix world = Matrix.Identity;
+
+        private Matrix[] transforms;
 
         #region Methods
         public void Initialize(Vector3 position, ContentManager contentManager)
@@ -50,6 +55,12 @@ namespace _3DGame
         {
             get { return position; }
             set { position = value; }
+        }
+
+        public Matrix World
+        {
+            get { return world; }
+            set { world = value; }
         }
 
         public Matrix[] Transforms

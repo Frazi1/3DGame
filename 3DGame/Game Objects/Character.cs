@@ -19,9 +19,12 @@ namespace _3DGame
 
         private Vector3 direction;
         private Vector3 position = Vector3.Zero;
+
         private float rotation;
 
         private Matrix rotationMatrix = Matrix.Identity;
+        private Matrix world = Matrix.Identity;
+
         private Matrix[] transforms;
 
         #region Methods
@@ -75,7 +78,7 @@ namespace _3DGame
 
 
         }
-        
+
         #endregion
 
 
@@ -83,6 +86,12 @@ namespace _3DGame
 
 
         public Vector3 Direction => direction;
+
+        public Matrix World
+        {
+            get { return world; }
+            set { world = value; }
+        }
 
         public Matrix[] Transforms
         {

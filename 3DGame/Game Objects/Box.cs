@@ -8,22 +8,34 @@ namespace _3DGame
 {
     public class Box: IGameObject
     {
+        private Model model;
+
         private BoundingBox boundingBox;
         private BoundingSphere boundingSphere;
 
-        private Model model;
-        private Matrix rotationMatrix = Matrix.Identity;
-        private Vector3 position = Vector3.Zero;
-        private Matrix[] transforms;
         private bool isActive;
+
+        private Vector3 position;
+        
+        private Matrix world = Matrix.Identity;
+        private Matrix rotationMatrix = Matrix.Identity;
+
+        private Matrix[] transforms;
 
 
         public void Initialize(ContentManager contentManager)
         {
+
+            //Model = contentManager.Load<Model>("QB");
             Model = contentManager.Load<Model>("sinon");
             Transforms = Drawer.SetupEffectDefaults(Model);
             IsActive = true;
+
+            World = Matrix.CreateTranslation(Position) * RotationMatrix;
+            //World = Matrix.CreateWorld(position,Vector3.Forward, Vector3.Up);
         }
+
+
         #region Properties
 
 
@@ -62,6 +74,12 @@ namespace _3DGame
         {
             get { return position; }
             set { position = value; }
+        }
+
+        public Matrix World
+        {
+            get { return world; }
+            set { world = value; }
         }
 
         public Matrix[] Transforms

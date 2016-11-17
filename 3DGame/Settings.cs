@@ -12,9 +12,11 @@ namespace _3DGame
         public static Vector3 StartingPlayerPosition = Vector3.Zero;
         public static float XOffset = -10f;
         public static float YOffset = 4.5f;
-        public static float CharacterScale = 0.1f;
 
-        public static float CharacterBoundingSphereScale = CharacterScale + CharacterScale * 10;
-        public static float BoxBoundingSphereScale = 1f;
+        //Scales
+        public static float CharacterScale = 0.1f;
+        public static float BoxScale = 0.0005f;
+        public static float CharacterBoundingSphereScale = 0.00001f;
+        public static float BoxBoundingSphereScale = 0.5f;
     }
 }

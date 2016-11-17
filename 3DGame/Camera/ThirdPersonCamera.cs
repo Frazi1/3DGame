@@ -8,53 +8,69 @@ using Microsoft.Xna.Framework.Input;
 
 namespace _3DGame
 {
-    public class ThirdPersonCamera : Camera
+    public class ThirdPersonCamera: Camera
     {
-        public ThirdPersonCamera(Game game) : base(game)
+        public IGameObject TargetGameObject;
+        public Vector3 Distance;
+
+        public ThirdPersonCamera(Game game, IGameObject targetGameObject) : base(game)
         {
+            //SetTargetGameObject(targetGameObject);
+            //Distance = new Vector3(0, -25, 150);
+            //Position.X = 0;
         }
+
+
 
         public override void Update(GameTime gameTime)
         {
             UpdateCameraPosition1();
 
+            //Target = TargetGameObject.Position;
+            //Position = TargetGameObject.Position - Distance;
+
             base.Update(gameTime);
+        }
+
+        public void SetTargetGameObject(IGameObject targetGameObject)
+        {
+            TargetGameObject = targetGameObject;
         }
 
         private void UpdateCameraPosition()
         {
             if (Keyboard.GetState().IsKeyDown(Keys.Left))
             {
-                CamPosition.X += 1f;
-                //CamTarget.X += 1f;
+                Position.X += 1f;
+                //Target.X += 1f;
             }
             if (Keyboard.GetState().IsKeyDown(Keys.Right))
             {
-                CamPosition.X -= 1f;
-                //CamTarget.X -= 1f;
+                Position.X -= 1f;
+                //Target.X -= 1f;
             }
             if (Keyboard.GetState().IsKeyDown(Keys.Up))
             {
-                CamPosition.Y += 1f;
-                CamTarget.Y += 1f;
+                Position.Y += 1f;
+                Target.Y += 1f;
             }
             if (Keyboard.GetState().IsKeyDown(Keys.Down))
             {
-                CamPosition.Y -= 1f;
-                CamTarget.Y -= 1f;
+                Position.Y -= 1f;
+                Target.Y -= 1f;
             }
 
             if (Keyboard.GetState().IsKeyDown(Keys.Z))
             {
-                CamPosition.Z += 1f;
+                Position.Z += 1f;
             }
             if (Keyboard.GetState().IsKeyDown(Keys.X))
             {
-                CamPosition.Z -= 1f;
+                Position.Z -= 1f;
             }
-           
 
-            ViewMatrix = Matrix.CreateLookAt(CamPosition, CamTarget, Vector3.Up);
+
+            ViewMatrix = Matrix.CreateLookAt(Position, Target, Vector3.Up);
         }
 
         private void UpdateCameraPosition1()
@@ -86,7 +102,7 @@ namespace _3DGame
                 rotationMatrix = Matrix.CreateTranslation(Vector3.Forward);
             }
 
-            CamPosition = Vector3.Transform(CamPosition, rotationMatrix);
+            Position = Vector3.Transform(Position, rotationMatrix);
 
         }
     }

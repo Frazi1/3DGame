@@ -18,8 +18,33 @@ namespace _3DGame
                     foreach (BasicEffect effect in mesh.Effects)
                     {
                         effect.World =
-                            absoluteBoneTransforms[mesh.ParentBone.Index]*
+                            absoluteBoneTransforms[mesh.ParentBone.Index] *
                             modelTransform;
+                        effect.Projection = camera.ProjectionMatrix;
+                        effect.View = camera.ViewMatrix;
+                    }
+
+                    //Draw the mesh, will use the effects set above.
+                    mesh.Draw();
+                }
+            }
+        }
+
+        public static void DrawModel(this IGameObject gameObject, Camera camera)
+        {
+            //var model = gameObject.Model;
+            //var absoluteBoneTransforms = gameObject.Transforms;
+            //var modelTransform = gameObject.World;
+
+            if (gameObject.Model!= null)
+            {
+                //Draw the model, a model can have multiple meshes, so loop
+                foreach (ModelMesh mesh in gameObject.Model.Meshes)
+                {
+                    //This is where the mesh orientation is set
+                    foreach (BasicEffect effect in mesh.Effects)
+                    {
+                        effect.World = gameObject.Transforms[mesh.ParentBone.Index] * gameObject.World;
                         effect.Projection = camera.ProjectionMatrix;
                         effect.View = camera.ViewMatrix;
                     }

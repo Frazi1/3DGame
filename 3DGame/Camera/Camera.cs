@@ -11,11 +11,13 @@ namespace _3DGame
 {
     public class Camera: GameComponent
     {
-        public Vector3 CamTarget;
-        public Vector3 CamPosition;
+        public Vector3 Target;
+        public Vector3 Position;
+        
         public Matrix ProjectionMatrix { get; protected set; }
         public Matrix ViewMatrix { get; protected set; }
         public float AspectRatio => Game.GraphicsDevice.Viewport.AspectRatio;
+
         public const float NearClip = 1.0f;
         public const float FarClip = 1000.0f;
         public const float ViewAngle = MathHelper.PiOver4;
@@ -27,9 +29,9 @@ namespace _3DGame
 
         public override void Initialize()
         {
-            ViewMatrix = Matrix.CreateLookAt(CamPosition, CamTarget, Vector3.Up);
+            ViewMatrix = Matrix.CreateLookAt(Position, Target, Vector3.Up);
             ProjectionMatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(ViewAngle), AspectRatio, NearClip, FarClip);
-            //WorldMatrix = /*Matrix.CreateWorld(CamTarget, Vector3.Forward, Vector3.Up);*/
+            //WorldMatrix = /*Matrix.CreateWorld(Target, Vector3.Forward, Vector3.Up);*/
                 //Matrix.Identity;
 
             //ViewMatrix=Matrix.Identity;
@@ -40,9 +42,9 @@ namespace _3DGame
 
         public override void Update(GameTime gameTime)
         {
-            ViewMatrix = Matrix.CreateLookAt(CamPosition, CamTarget, Vector3.Up);
+            ViewMatrix = Matrix.CreateLookAt(Position, Target, Vector3.Up);
             ProjectionMatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(ViewAngle), AspectRatio, NearClip, FarClip);
-            //WorldMatrix = Matrix.CreateWorld(CamTarget, Vector3.Forward, Vector3.Up);
+            //WorldMatrix = Matrix.CreateWorld(Target, Vector3.Forward, Vector3.Up);
 
             base.Update(gameTime);
         }
