@@ -20,6 +20,9 @@ namespace _3DGame
         List<Road> roads = new List<Road>();
         List<Box> boxes = new List<Box>();
 
+        //Debug
+        bool collided = false;
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -51,7 +54,7 @@ namespace _3DGame
             camera = new ThirdPersonCamera(this, character)
             {
                 //Position = new Vector3(-100, 0, 100),
-                Position = new Vector3(0,10,80),
+                Position = new Vector3(0, 10, 80),
                 //Target = character.Position,
                 Target = new Vector3(0f, 0f, 10f)
             };
@@ -68,10 +71,13 @@ namespace _3DGame
 
             //Box
             //boxes.Add(gameObjectCreator.CreateBox());
-            boxes.Add(GameObjectCreator.CreateBox(new Vector3(10, 0, 10)));
+            boxes.Add(GameObjectCreator.CreateBox(new Vector3(10, 2, 40)));
 
-            //Bounding Spheres Renderer
+            //Bounding Spheres Renderer Initialize
             BoundingSphereRenderer.Initialize(GraphicsDevice, 50);
+
+            //Bouding Box Renderer Initialize
+            BoundingBoxRenderer.Initialize(GraphicsDevice);
 
             //Set RasterizerState
             GraphicsDevice.RasterizerState = new RasterizerState { CullMode = CullMode.None };
@@ -95,11 +101,13 @@ namespace _3DGame
         protected override void Update(GameTime gameTime)
         {
             character.Update(gameTime);
-            Collider.CollisionDetection(character, boxes);
+            collided = Collider.CollisionDetection(character, boxes);
 
             Reset();
+            //Window.Title = camera.Position.ToString();
+            Window.Title = collided ? "Collided" : "Not collided";
             base.Update(gameTime);
-            Window.Title = camera.Position.ToString();
+
         }
 
         protected override void Draw(GameTime gameTime)
@@ -129,7 +137,9 @@ namespace _3DGame
                 box.World = boxTransformsMatrix;
 
                 box.DrawModel(camera);
+
                 box.DrawBoundingSphere(camera);
+                //box.DrawBoundingSphere(camera);
             }
 
             base.Draw(gameTime);
@@ -145,8 +155,8 @@ namespace _3DGame
                 road.DrawModel(camera);
 
             }
-                //roads[4].CreateBoundingSphere(1);
-                //roads[4].DrawBoundingSphere(camera);
+            //roads[4].CreateBoundingSphere(1);
+            //roads[4].DrawBoundingSphere(camera);
 
         }
 
