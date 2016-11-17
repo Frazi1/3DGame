@@ -38,7 +38,7 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="BoundingSphereRenderer.cs" />
+    <Compile Include="Utils\BoundingSphereRenderer.cs" />
     <Compile Include="Camera\Camera.cs" />
     <Compile Include="Utils\GameObjectCreator.cs" />
     <Compile Include="Utils\Drawer.cs" />

@@ -2,7 +2,7 @@
 #----------------------------- Global Properties ----------------------------#
 
 /outputDir:bin/$(Platform)
-/intermediateDir:obj/$(Platform)
+/intermediateDir:..\Content
 /platform:Windows
 /config:
 /profile:Reach
@@ -65,7 +65,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=1
+/processorParam:Scale=0.001
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=DxtCompressed
 /build:QB.fbx

@@ -15,7 +15,7 @@ namespace _3DGame
 
         //Scales
         public static float CharacterScale = 0.1f;
-        public static float BoxScale = 0.0005f;
+        public static float BoxScale = /*0.0005f*/ 1f;
         public static float CharacterBoundingSphereScale = 0.00001f;
         public static float BoxBoundingSphereScale = 0.5f;
     }

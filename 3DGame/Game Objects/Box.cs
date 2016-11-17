@@ -26,12 +26,11 @@ namespace _3DGame
         public void Initialize(ContentManager contentManager)
         {
 
-            //Model = contentManager.Load<Model>("QB");
-            Model = contentManager.Load<Model>("sinon");
+            Model = contentManager.Load<Model>("QB");
             Transforms = Drawer.SetupEffectDefaults(Model);
             IsActive = true;
 
-            World = Matrix.CreateTranslation(Position) * RotationMatrix;
+            World = RotationMatrix * Matrix.CreateTranslation(Position);
             //World = Matrix.CreateWorld(position,Vector3.Forward, Vector3.Up);
         }
 

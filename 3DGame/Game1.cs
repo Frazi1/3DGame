@@ -20,9 +20,6 @@ namespace _3DGame
         List<Road> roads = new List<Road>();
         List<Box> boxes = new List<Box>();
 
-
-        GameObjectCreator gameObjectCreator;
-
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -40,7 +37,7 @@ namespace _3DGame
             base.Initialize();
 
             //Initialize GameObjectCreator
-            gameObjectCreator = new GameObjectCreator(Content);
+            GameObjectCreator.Initialize(Content);
 
             //Subcribe to Events
             EventsSubscribe();
@@ -71,8 +68,7 @@ namespace _3DGame
 
             //Box
             //boxes.Add(gameObjectCreator.CreateBox());
-            boxes.Add(new Box() {Position = new Vector3(10,0,5)});
-            boxes[0].Initialize(Content);
+            boxes.Add(GameObjectCreator.CreateBox(new Vector3(10, 0, 10)));
 
             //Bounding Spheres Renderer
             BoundingSphereRenderer.Initialize(GraphicsDevice, 50);
@@ -149,8 +145,8 @@ namespace _3DGame
                 road.DrawModel(camera);
 
             }
-                roads[4].CreateBoundingSphere(1);
-                roads[4].DrawBoundingSphere(camera);
+                //roads[4].CreateBoundingSphere(1);
+                //roads[4].DrawBoundingSphere(camera);
 
         }
 
@@ -187,7 +183,7 @@ namespace _3DGame
         //Events Methods
         private void GameEvents_ObjectCollided(ICollidable arg1, ICollidable arg2)
         {
-            arg2.IsActive = false;
+            //arg2.IsActive = false;
         }
 
 
