@@ -56,7 +56,7 @@ namespace _3DGame
                 //Position = new Vector3(-100, 0, 100),
                 Position = new Vector3(0, 10, 80),
                 //Target = character.Position,
-                Target = new Vector3(0f, 0f, 10f)
+                Target = new Vector3(0f, 0f, 0f)
             };
             Components.Add(camera);
 
@@ -71,7 +71,7 @@ namespace _3DGame
 
             //Box
             //boxes.Add(gameObjectCreator.CreateBox());
-            boxes.Add(GameObjectCreator.CreateBox(new Vector3(10, 2, 40)));
+            boxes.Add(GameObjectCreator.CreateBox(new Vector3(10, 1, 40)));
 
             //Bounding Spheres Renderer Initialize
             BoundingSphereRenderer.Initialize(GraphicsDevice, 50);
@@ -101,11 +101,20 @@ namespace _3DGame
         protected override void Update(GameTime gameTime)
         {
             character.Update(gameTime);
+            for (int i = 0; i < boxes.Count; i++)
+            {
+                boxes[i].Update();
+            }
+
             collided = Collider.CollisionDetection(character, boxes);
 
             Reset();
             //Window.Title = camera.Position.ToString();
             Window.Title = collided ? "Collided" : "Not collided";
+
+
+
+
             base.Update(gameTime);
 
         }
@@ -120,8 +129,9 @@ namespace _3DGame
 
             DrawRoads();
 
-            Matrix characterTransormsMatrix = character.RotationMatrix * Matrix.CreateTranslation(character.Position) *
-                                              Matrix.CreateScale(CharacterScale);
+            Matrix characterTransormsMatrix = character.RotationMatrix 
+                * Matrix.CreateTranslation(character.Position) 
+                * Matrix.CreateScale(Character_Scale);
             character.World = characterTransormsMatrix;
 
             character.DrawModel(camera);
@@ -132,8 +142,9 @@ namespace _3DGame
                 var box = boxes[i];
                 if (!box.IsActive)
                     continue;
-                Matrix boxTransformsMatrix = box.RotationMatrix * Matrix.CreateTranslation(box.Position) *
-                                             Matrix.CreateScale(/*0.0001f*/CharacterScale);
+                Matrix boxTransformsMatrix = box.RotationMatrix 
+                    * Matrix.CreateTranslation(box.Position) 
+                    * Matrix.CreateScale(/*0.0001f*/Character_Scale);
                 box.World = boxTransformsMatrix;
 
                 box.DrawModel(camera);
@@ -157,7 +168,8 @@ namespace _3DGame
             }
             //roads[4].CreateBoundingSphere(1);
             //roads[4].DrawBoundingSphere(camera);
-
+            roads[4].CreateBoundingBox();
+            roads[4].DrawBoundingBox(camera,Color.White);
         }
 
         private void CreateRoads()
@@ -181,6 +193,10 @@ namespace _3DGame
                 {
                     boxes[i].IsActive = true;
                 }
+            if(Keyboard.GetState().IsKeyDown(Keys.K))
+                boxes.Add(GameObjectCreator.CreateBox(
+                    GameObjectCreator.GetRandomPosition(),
+                    character.Position));
         }
 
         private void SetDebugText(string text)
