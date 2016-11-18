@@ -17,6 +17,9 @@ namespace _3DGame
         private float speed = 0;
         private float velocity = Settings.Box_Velocity;
 
+        private float livingTime = 0;
+        private TimeSpan livingTimeSpan;
+
         private bool isActive;
 
         private Vector3 position;
@@ -36,13 +39,16 @@ namespace _3DGame
             Transforms = Drawer.SetupEffectDefaults(Model);
             IsActive = true;
 
-            World = RotationMatrix * Matrix.CreateTranslation(Position);
+            livingTimeSpan = new TimeSpan();
+            SetWorld();
+
+            //World = RotationMatrix * Matrix.CreateTranslation(Position);
             //World = Matrix.CreateWorld(position,Vector3.Forward, Vector3.Up);
         }
 
-        public void Update()
+        public void Update(GameTime gameTime)
         {
-            if (Direction == null)
+            if (Direction == Vector3.Zero)
             {
                 direction = target - position;
                 direction.Normalize();
@@ -50,11 +56,21 @@ namespace _3DGame
 
             Speed += Velocity;
             Position += Direction * Speed;
-            World = RotationMatrix * Matrix.CreateTranslation(Position);
 
+            SetWorld();
 
+            //LivingTime += gameTime.ElapsedGameTime.;
+            livingTimeSpan = livingTimeSpan.Add(gameTime.ElapsedGameTime);
+            if (livingTimeSpan.Seconds>= Settings.Box_Living_Time)
+                IsActive = false;
         }
 
+        public void SetWorld()
+        {
+            World = RotationMatrix
+                    * Matrix.CreateTranslation(Position)
+                    * Matrix.CreateScale(/*0.0001f*/Character_Scale);
+        }
 
 
         #region Properties
@@ -76,7 +92,12 @@ namespace _3DGame
         public bool IsActive
         {
             get { return isActive; }
-            set { isActive = value; }
+            set
+            {
+                isActive = value;
+                if(value == false)
+                    GameEvents.OnBoxDestroyed(this);
+            }
         }
 
         public Model Model
@@ -135,6 +156,12 @@ namespace _3DGame
         {
             get { return direction; }
             set { direction = value; }
+        }
+
+        public float LivingTime
+        {
+            get { return livingTime; }
+            set { livingTime = value; }
         }
 
         #endregion

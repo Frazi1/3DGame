@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using static _3DGame.Settings;
 
 namespace _3DGame
 {
@@ -27,6 +28,8 @@ namespace _3DGame
 
         private Matrix[] transforms;
 
+        private byte currentHealth;
+
         #region Methods
 
         public void Initialize(ContentManager contentManager)
@@ -36,13 +39,20 @@ namespace _3DGame
             Transforms = Drawer.SetupEffectDefaults(Model);
             IsActive = true;
 
+            SetWorld();
+
+            CurrentHealth = Settings.Character_Max_Heath;
+
         }
 
         public void Update(GameTime gameTime)
         {
             //angle += (float)gameTime.ElapsedGameTime.TotalSeconds;
             UpdateCharacterPosition();
+            SetWorld();
+
         }
+
         private void UpdateCharacterPosition()
         {
             float amount = 0.1f;
@@ -76,7 +86,13 @@ namespace _3DGame
                 //Vector3.Transform(direction, Matrix.CreateRotationX(0.01f));
             }
 
+        }
 
+        public void SetWorld()
+        {
+            World = RotationMatrix
+    * Matrix.CreateTranslation(Position)
+    * Matrix.CreateScale(Character_Scale);
         }
 
         #endregion
@@ -98,6 +114,8 @@ namespace _3DGame
             get { return transforms; }
             set { transforms = value; }
         }
+
+
 
         public float Rotation
         {
@@ -158,6 +176,17 @@ namespace _3DGame
         {
             get { return model; }
             set { model = value; }
+        }
+
+        public byte CurrentHealth
+        {
+            get { return currentHealth; }
+            set
+            {
+                currentHealth = value;
+                if(currentHealth<=0)
+                    GameEvents.OnCharacterDied(this);
+            }
         }
 
         #endregion

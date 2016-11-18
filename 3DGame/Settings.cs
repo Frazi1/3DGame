@@ -40,6 +40,12 @@ namespace _3DGame
         //Moving Settings
         public static float Box_Velocity = 0.05f;
         public static float Box_Max_Speed = 1f;
+        public static float Box_Living_Time = 5f;
+
+
+        //Player Constants
+        public static byte Character_Max_Heath = 3;
+
     }
 
 }

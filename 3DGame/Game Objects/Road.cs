@@ -32,9 +32,15 @@ namespace _3DGame
             Position = position;
             Transforms = Drawer.SetupEffectDefaults(Model);
             IsActive = true;
-
+            SetWorld();
             //World = Matrix.CreateWorld(Position, Vector3.Forward, Vector3.Up);
         }
+
+        public void SetWorld()
+        {
+            World = RotationMatrix * Matrix.CreateTranslation(Position);
+        }
+
         #endregion
 
         #region Properties
@@ -68,7 +74,7 @@ namespace _3DGame
             get { return transforms; }
             set { transforms = value; }
         }
-        
+
 
         public BoundingBox BoundingBox
         {

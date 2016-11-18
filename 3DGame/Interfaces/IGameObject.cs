@@ -13,5 +13,6 @@ namespace _3DGame
         Matrix RotationMatrix { get; set; }
         Matrix[] Transforms { get; set; }
 
+        void SetWorld();
     }
 }

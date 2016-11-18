@@ -86,7 +86,11 @@ namespace _3DGame
         private void EventsSubscribe()
         {
             GameEvents.ObjectCollided += GameEvents_ObjectCollided;
+            GameEvents.CharacterDied += GameEvents_CharacterDied;
+            GameEvents.BoxDestroyed += GameEvents_BoxDestroyed;
+            GameEvents.CharacterHit += GameEvents_CharacterHit;
         }
+
 
 
         protected override void LoadContent()
@@ -103,14 +107,19 @@ namespace _3DGame
             character.Update(gameTime);
             for (int i = 0; i < boxes.Count; i++)
             {
-                boxes[i].Update();
+                boxes[i].Update(gameTime);
+                if (!boxes[i].IsActive)
+                {
+                    boxes.RemoveAt(i);
+                    --i;
+                }
             }
 
             collided = Collider.CollisionDetection(character, boxes);
 
             Reset();
             //Window.Title = camera.Position.ToString();
-            Window.Title = collided ? "Collided" : "Not collided";
+            Window.Title = character.CurrentHealth.ToString();
 
 
 
@@ -129,10 +138,12 @@ namespace _3DGame
 
             DrawRoads();
 
-            Matrix characterTransormsMatrix = character.RotationMatrix 
-                * Matrix.CreateTranslation(character.Position) 
-                * Matrix.CreateScale(Character_Scale);
-            character.World = characterTransormsMatrix;
+            //Matrix characterTransormsMatrix = character.RotationMatrix 
+            //    * Matrix.CreateTranslation(character.Position) 
+            //    * Matrix.CreateScale(Character_Scale);
+            //character.World = characterTransormsMatrix;
+
+
 
             character.DrawModel(camera);
             character.DrawBoundingSphere(camera);
@@ -142,10 +153,10 @@ namespace _3DGame
                 var box = boxes[i];
                 if (!box.IsActive)
                     continue;
-                Matrix boxTransformsMatrix = box.RotationMatrix 
-                    * Matrix.CreateTranslation(box.Position) 
-                    * Matrix.CreateScale(/*0.0001f*/Character_Scale);
-                box.World = boxTransformsMatrix;
+                //Matrix boxTransformsMatrix = box.RotationMatrix 
+                //    * Matrix.CreateTranslation(box.Position) 
+                //    * Matrix.CreateScale(/*0.0001f*/Character_Scale);
+                //box.World = boxTransformsMatrix;
 
                 box.DrawModel(camera);
 
@@ -160,16 +171,17 @@ namespace _3DGame
         {
             foreach (Road road in roads)
             {
-                Matrix roadTransformsMatrix = road.RotationMatrix * Matrix.CreateTranslation(road.Position);
+                //Matrix roadTransformsMatrix = road.RotationMatrix * Matrix.CreateTranslation(road.Position);
                 //Drawer.DrawModel(road.Model, roadTransformsMatrix, road.Transforms, camera);
-                road.World = roadTransformsMatrix;
+                //road.World = roadTransformsMatrix;
                 road.DrawModel(camera);
 
             }
             //roads[4].CreateBoundingSphere(1);
             //roads[4].DrawBoundingSphere(camera);
-            roads[4].CreateBoundingBox();
-            roads[4].DrawBoundingBox(camera,Color.White);
+
+            //roads[4].CreateBoundingBox();
+            //roads[4].DrawBoundingBox(camera,Color.White);
         }
 
         private void CreateRoads()
@@ -199,19 +211,28 @@ namespace _3DGame
                     character.Position));
         }
 
-        private void SetDebugText(string text)
-        {
-            Window.Title = text;
-        }
-
-
 
         //Events Methods
-        private void GameEvents_ObjectCollided(ICollidable arg1, ICollidable arg2)
+        private void GameEvents_ObjectCollided(IGameObject arg1, IGameObject arg2)
         {
             //arg2.IsActive = false;
+            arg2.IsActive = false;
+        }
+        private void GameEvents_BoxDestroyed(Box obj)
+        {
+            //throw new NotImplementedException();
         }
 
+        private void GameEvents_CharacterDied(Character obj)
+        {
+            //throw new NotImplementedException();
+        }
+
+        private void GameEvents_CharacterHit(Character arg1, IGameObject arg2 )
+        {
+            arg1.CurrentHealth--;
+            arg2.IsActive = false;
+        }
 
 
 

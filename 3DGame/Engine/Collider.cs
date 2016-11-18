@@ -12,16 +12,16 @@ namespace _3DGame
     {
         #region Methods
 
-        public static bool CheckBoundingBoxCollision(ICollidable source, ICollidable obstacle)
-        {
-            bool res = source.BoundingBox.Intersects(obstacle.BoundingBox);
-            if (res)
-                GameEvents.OnObjectCollided(source, obstacle);
-            return res;
+        //public static bool CheckBoundingBoxCollision(IGameObject source, IGameObject obstacle)
+        //{
+        //    bool res = source.BoundingBox.Intersects(obstacle.BoundingBox);
+        //    if (res)
+        //        GameEvents.OnObjectCollided(source, obstacle);
+        //    return res;
 
-        }
+        //}
 
-        public static bool CheckSphereCollision(ICollidable source, ICollidable obstacle)
+        public static bool CheckSphereCollision(IGameObject source, IGameObject obstacle)
         {
             bool res = source.BoundingSphere.Intersects(obstacle.BoundingSphere);
             if (res)
@@ -44,6 +44,11 @@ namespace _3DGame
                 b.CreateBoundingSphere(BoxBoundingSphere_Scale);
                 
                 bool res = CheckSphereCollision(character, b);
+                if (res)
+                {
+                    GameEvents.OnCharacterHit(character, b);
+                    GameEvents.OnObjectCollided(character, b);
+                }
                 if (!result && res)
                     result = true;
             }
