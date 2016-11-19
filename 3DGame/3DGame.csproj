@@ -39,6 +39,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Level.cs" />
+    <Compile Include="Menu\GameState.cs" />
+    <Compile Include="Menu\Menu.cs" />
+    <Compile Include="Menu\MenuItem.cs" />
     <Compile Include="Utils\BoundingBoxRenderer.cs" />
     <Compile Include="Utils\BoundingSphereRenderer.cs" />
     <Compile Include="Camera\Camera.cs" />

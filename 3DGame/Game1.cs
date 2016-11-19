@@ -18,6 +18,8 @@ namespace _3DGame
         SpriteFont textFont;
         SpriteBatch spriteBatch;
 
+        Menu menu;
+        GameState gameState = GameState.Menu;
 
         Character character;
         Camera camera;
@@ -52,7 +54,7 @@ namespace _3DGame
 
         protected override void Initialize()
         {
-            base.Initialize();
+
 
             //Initialize GameObjectCreator
             GameObjectCreator.Initialize(Content);
@@ -60,6 +62,46 @@ namespace _3DGame
             //Subcribe to Events
             EventsSubscribe();
 
+
+
+            //Box
+
+            //Bounding Spheres Renderer Initialize
+            BoundingSphereRenderer.Initialize(GraphicsDevice, 50);
+
+            //Bouding Box Renderer Initialize
+            BoundingBoxRenderer.Initialize(GraphicsDevice);
+
+            //Set RasterizerState
+            GraphicsDevice.RasterizerState = new RasterizerState { CullMode = CullMode.None };
+
+            //Random
+            rnd = new Random();
+
+
+            spriteBatch = new SpriteBatch(GraphicsDevice);
+
+
+            menu = new Menu();
+            MenuItem resume = new MenuItem("Resume");
+            MenuItem start = new MenuItem("Start");
+            MenuItem exit = new MenuItem("Exit");
+
+            resume.Active = false;
+
+            resume.Click += Resume_Click;
+            start.Click += Start_Click;
+            exit.Click += Exit_Click;
+
+            menu.Items.Add(resume);
+            menu.Items.Add(start);
+            menu.Items.Add(exit);
+            base.Initialize();
+
+        }
+
+        private void StartGame()
+        {
             //Model Initialization
             character = new Character { Position = Settings.StartingPlayerPosition };
             character.Initialize(Content);
@@ -77,28 +119,14 @@ namespace _3DGame
             CreateRoads();
 
 
-            //Box
-
-            //Bounding Spheres Renderer Initialize
-            BoundingSphereRenderer.Initialize(GraphicsDevice, 50);
-
-            //Bouding Box Renderer Initialize
-            BoundingBoxRenderer.Initialize(GraphicsDevice);
-
-            //Set RasterizerState
-            GraphicsDevice.RasterizerState = new RasterizerState { CullMode = CullMode.None };
-
-            //Random
-            rnd = new Random();
-
             //Level
             level = new Level();
-
-            spriteBatch = new SpriteBatch(GraphicsDevice);
         }
+
         protected override void LoadContent()
         {
             textFont = Content.Load<SpriteFont>("TextFont");
+            menu.LoadContent(Content);
         }
         protected override void UnloadContent()
         {
@@ -106,31 +134,26 @@ namespace _3DGame
 
         protected override void Update(GameTime gameTime)
         {
-            character.Update(gameTime);
-            for (int i = 0; i < boxes.Count; i++)
+            if (gameState == GameState.Game)
             {
-                boxes[i].Update(gameTime);
-                if (!boxes[i].IsActive)
-                {
-                    boxes.RemoveAt(i);
-                    --i;
-                }
+               UpdateGame(gameTime);
             }
-
-            collided = Collider.CollisionDetection(character, boxes);
-            level.Update(gameTime);
-            SpawnBlocks(gameTime);
-            //SetDebugText(level.CurrentLevel + " - " + boxes.Count);
-            //SetDebugText(character.Position.ToString());
-
-
-
+            else
+                menu.Update();
             base.Update(gameTime);
-
         }
+
         protected override void Draw(GameTime gameTime)
         {
+            if (gameState == GameState.Game)
+                DrawGame();
+            else
+                menu.Draw(spriteBatch);
+            base.Draw(gameTime);
+        }
 
+        private void DrawGame()
+        {
             GraphicsDevice.Clear(Color.CornflowerBlue);
             DrawRoads();
             character.DrawModel(camera);
@@ -158,10 +181,7 @@ namespace _3DGame
                 Color.Black
                 );
             spriteBatch.End();
-
-            base.Draw(gameTime);
         }
-
         private void DrawRoads()
         {
             foreach (Road road in roads)
@@ -178,6 +198,7 @@ namespace _3DGame
             //roads[4].CreateBoundingBox();
             //roads[4].DrawBoundingBox(camera,Color.White);
         }
+
         private void CreateRoads()
         {
             const int count = 1;
@@ -217,7 +238,9 @@ namespace _3DGame
         }
         private void GameEvents_CharacterDied(Character obj)
         {
-            Exit();
+            menu.Header = "You died";
+            gameState = GameState.Menu;
+
         }
         private void GameEvents_CharacterHit(Character arg1, IGameObject arg2)
         {
@@ -225,25 +248,74 @@ namespace _3DGame
             arg2.IsActive = false;
         }
 
+        private void Exit_Click(object sender, EventArgs e)
+        {
+            Exit();
+        }
+        private void Start_Click(object sender, EventArgs e)
+        {
+            menu.Header=string.Empty;
+            StartGame();
+            boxes = new List<Box>();
+            gameState = GameState.Game;
+            for (int i = 0; i < menu.Items.Count; i++)
+            {
+                if (menu.Items[i].Name == "Resume")
+                {
+                    menu.Items[i].Active = true;
+                    return;
+                }
+            }
+        }
+        private void Resume_Click(object sender, EventArgs e)
+        {
+            gameState = GameState.Game;
+            for (int i = 0; i < menu.Items.Count; i++)
+            {
+                if (menu.Items[i].Name == "Resume")
+                {
+                    menu.Items[i].Active = false;
+                    return;
+                }
+            }
+        }
+
 
         //GameLogic
+        private void UpdateGame(GameTime gameTime)
+        {
+            if (Keyboard.GetState().IsKeyDown(Keys.Escape))
+                gameState = GameState.Menu;
+            else
+                character.Update(gameTime);
+            for (int i = 0; i < boxes.Count; i++)
+            {
+                boxes[i].Update(gameTime);
+                if (!boxes[i].IsActive)
+                {
+                    boxes.RemoveAt(i);
+                    --i;
+                }
+            }
+
+            collided = Collider.CollisionDetection(character, boxes);
+            level.Update(gameTime);
+            SpawnBlocks(gameTime);
+        }
         private void SpawnBlocks(GameTime gameTime)
         {
             //int number = level.CurrentLevel * 3;
 
             if (!level.BoxSpawned)
             {
-                    boxes.Add(GameObjectCreator.CreateBox(
-                        GameObjectCreator.GetRandomPosition(gameTime),
-                        character.Position));
+                boxes.Add(GameObjectCreator.CreateBox(
+                    GameObjectCreator.GetRandomPosition(gameTime),
+                    character.Position));
                 level.BoxSpawnedNumber++;
                 //level.ElapsedBoxSpawned = new TimeSpan();
-            }            
+            }
 
         }
-
-
-
     }
 
 
