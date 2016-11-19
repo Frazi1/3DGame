@@ -9,7 +9,7 @@ namespace _3DGame
 {
     public static class Settings
     {
-        public static Vector3 StartingPlayerPosition = Vector3.Zero;
+        public static Vector3 StartingPlayerPosition = new Vector3(11, 0, -40);
         public static float XOffset = -10f;
         public static float YOffset = 4.5f;
 
@@ -38,14 +38,24 @@ namespace _3DGame
 
 
         //Moving Settings
-        public static float Box_Velocity = 0.05f;
-        public static float Box_Max_Speed = 1f;
-        public static float Box_Living_Time = 5f;
+        public static float Box_Velocity = 0.01f;
+        public static float Box_Max_Speed = 0.3f;
+        public static float Box_Living_Time = 20f;
 
 
         //Player Constants
-        public static byte Character_Max_Heath = 3;
+        public static int Character_Max_Heath = 3;
+        public static float Camera_Distance = 100f;
+        public static float Camera_Heigth = 100f;
+
+        //Level Settings
+        public static float FirstLevel_Time = 3f;
+        public static float Level_TimeDelta = 2;
+        public static double BoxSpawning_Interval = 1;
 
     }
+
+
+
 
 }

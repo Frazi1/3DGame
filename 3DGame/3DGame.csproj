@@ -38,6 +38,7 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Level.cs" />
     <Compile Include="Utils\BoundingBoxRenderer.cs" />
     <Compile Include="Utils\BoundingSphereRenderer.cs" />
     <Compile Include="Camera\Camera.cs" />

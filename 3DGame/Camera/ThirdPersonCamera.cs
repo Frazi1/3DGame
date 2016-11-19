@@ -10,29 +10,36 @@ namespace _3DGame
 {
     public class ThirdPersonCamera: Camera
     {
-        public IGameObject TargetGameObject;
-        public Vector3 Distance;
+        public Character TargetGameObject;
+        public float Distance;
+
+        private Vector3 direction = Vector3.Forward;
+
+        float angle = 0;
+        Matrix rotationMatrix = Matrix.Identity;
 
         public ThirdPersonCamera(Game game, IGameObject targetGameObject) : base(game)
         {
             //SetTargetGameObject(targetGameObject);
             //Distance = new Vector3(0, -25, 150);
             //Position.X = 0;
+            //Direction = Target;
+            //Direction.Normalize();
         }
 
 
 
         public override void Update(GameTime gameTime)
         {
-            UpdateCameraPosition1();
+            //UpdateCameraPosition1();
+            FollowCharacter();
 
-            //Target = TargetGameObject.Position;
-            //Position = TargetGameObject.Position - Distance;
+
 
             base.Update(gameTime);
         }
 
-        public void SetTargetGameObject(IGameObject targetGameObject)
+        public void SetTargetGameObject(Character targetGameObject)
         {
             TargetGameObject = targetGameObject;
         }
@@ -75,23 +82,42 @@ namespace _3DGame
 
         private void UpdateCameraPosition1()
         {
-            Matrix rotationMatrix = Matrix.Identity;
+            //Matrix rotationMatrix = Matrix.Identity;
+            float amount = 0.05f;
 
             if (Keyboard.GetState().IsKeyDown(Keys.Left))
             {
-                rotationMatrix = Matrix.CreateRotationY(0.01f);
+                RotationMatrix = Matrix.CreateRotationY(0.01f);
+                Direction = Vector3.Transform(Direction, RotationMatrix);
+                Direction.Normalize();
+                Position = Vector3.Transform(Position, RotationMatrix);
             }
             if (Keyboard.GetState().IsKeyDown(Keys.Right))
             {
-                rotationMatrix = Matrix.CreateRotationY(-0.01f);
+                RotationMatrix = Matrix.CreateRotationY(-0.01f);
+                Direction = Vector3.Transform(Direction, RotationMatrix);
+                Direction.Normalize();
+                Position = Vector3.Transform(Position, RotationMatrix);
+
             }
             if (Keyboard.GetState().IsKeyDown(Keys.Up))
             {
-                rotationMatrix = Matrix.CreateRotationX(0.01f);
+                //rotationMatrix = Matrix.CreateRotationX(0.01f);
+                angle += 0.01f;
+                RotationMatrix = Matrix.CreateRotationX(angle);
+                Direction = Vector3.Transform(Direction, RotationMatrix);
+                Direction.Normalize();
+                Position = Vector3.Transform(Position, RotationMatrix);
             }
             if (Keyboard.GetState().IsKeyDown(Keys.Down))
             {
-                rotationMatrix = Matrix.CreateRotationX(-0.01f);
+                //rotationMatrix = Matrix.CreateRotationX(-0.01f);
+                angle -= 0.01f;
+
+                RotationMatrix = Matrix.CreateRotationX(angle);
+                Position = Vector3.Transform(Position, RotationMatrix);
+                Direction = Vector3.Transform(Direction, RotationMatrix);
+                Direction.Normalize();
             }
             if (Keyboard.GetState().IsKeyDown(Keys.Z))
             {
@@ -101,9 +127,67 @@ namespace _3DGame
             {
                 rotationMatrix = Matrix.CreateTranslation(Vector3.Forward);
             }
+            if (Keyboard.GetState().IsKeyDown(Keys.Y))
+            {
+                Position += Direction * amount;
+                Target += Direction * amount;
+                //rotationMatrix = Matrix.CreateTranslation(Position);
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.H))
+            {
+                Position -= Direction * amount;
+                Target -= Direction * amount;
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.J))
+            {
+                Position += Vector3.Cross(Direction,Vector3.Up) * amount;
+                Target += Vector3.Cross(Direction, Vector3.Up) * amount;
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.G))
+            {
+                Position -= Vector3.Cross(Direction, Vector3.Up) * amount;
+                Target -= Vector3.Cross(Direction, Vector3.Up) * amount;
+            }
 
-            Position = Vector3.Transform(Position, rotationMatrix);
+            //Position = Vector3.Transform(Position,RotationMatrix);
+            angle = 0;
+        }
+
+        private void FollowCharacter()
+        {
+            //RotationMatrix = Matrix.CreateRotationY(TargetGameObject.Rotation);
+
+            //Vector3 thirdPersonReference = new Vector3(0,Distance,-Distance);
+            //Vector3 transformedReference = Vector3.Transform(thirdPersonReference,
+            //    RotationMatrix);
+            //Position = transformedReference + TargetGameObject.Position;
+
+            //ViewMatrix = Matrix.CreateLookAt(Position,TargetGameObject.Position, Vector3.Up);
+            //ProjectionMatrix = Matrix.CreatePerspectiveFieldOfView(ViewAngle,
+            //    AspectRatio,
+            //    NearClip,
+            //    FarClip);
+
+            Position = TargetGameObject.World.Translation + new Vector3(0,Settings.Camera_Heigth,-Settings.Camera_Distance);
+            Target = TargetGameObject.World.Translation + (TargetGameObject.World.Up * 3);
+            ViewMatrix  =Matrix.CreateLookAt(Position,TargetGameObject.Direction,Vector3.Up);
+
+
 
         }
+        #region Properties
+        public Matrix RotationMatrix
+        {
+            get { return rotationMatrix; }
+            set { rotationMatrix = value; }
+        }
+
+        public Vector3 Direction
+        {
+            get { return direction; }
+            set { direction = value; }
+        }
+
+        #endregion
     }
 }

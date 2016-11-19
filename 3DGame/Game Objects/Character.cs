@@ -21,14 +21,14 @@ namespace _3DGame
         private Vector3 direction;
         private Vector3 position = Vector3.Zero;
 
-        private float rotation;
+        private float rotation = 0;
 
         private Matrix rotationMatrix = Matrix.Identity;
         private Matrix world = Matrix.Identity;
 
         private Matrix[] transforms;
 
-        private byte currentHealth;
+        private int currentHealth;
 
         #region Methods
 
@@ -48,12 +48,12 @@ namespace _3DGame
         public void Update(GameTime gameTime)
         {
             //angle += (float)gameTime.ElapsedGameTime.TotalSeconds;
-            UpdateCharacterPosition();
+            UpdateCharacterPosition(gameTime);
             SetWorld();
 
         }
 
-        private void UpdateCharacterPosition()
+        private void UpdateCharacterPosition(GameTime gameTime)
         {
             float amount = 0.1f;
 
@@ -78,12 +78,18 @@ namespace _3DGame
 
             if (Keyboard.GetState().IsKeyDown(Keys.Q))
             {
-                Vector3.Transform(direction, Matrix.CreateRotationX(0.01f));
-                //worldMatrix *= Matrix.CreateRotationY(0.01f);
+                Rotation += 1f / 500f * gameTime.ElapsedGameTime.Milliseconds;
+                RotationMatrix = Matrix.CreateRotationY(Rotation);
+
+                Direction = Vector3.Transform(direction, RotationMatrix );
+                
             }
             if (Keyboard.GetState().IsKeyDown(Keys.E))
             {
-                //Vector3.Transform(direction, Matrix.CreateRotationX(0.01f));
+                Rotation -= 1f / 500f * gameTime.ElapsedGameTime.Milliseconds;
+                RotationMatrix = Matrix.CreateRotationY(Rotation);
+                
+                Direction =  Vector3.Transform(direction, RotationMatrix);
             }
 
         }
@@ -101,7 +107,11 @@ namespace _3DGame
         #region Properties
 
 
-        public Vector3 Direction => direction;
+        public Vector3 Direction
+        {
+            get { return direction; }
+            set { direction = value; }
+        }
 
         public Matrix World
         {
@@ -178,7 +188,7 @@ namespace _3DGame
             set { model = value; }
         }
 
-        public byte CurrentHealth
+        public int CurrentHealth
         {
             get { return currentHealth; }
             set
