@@ -136,7 +136,7 @@ namespace _3DGame
         {
             if (gameState == GameState.Game)
             {
-               UpdateGame(gameTime);
+                UpdateGame(gameTime);
             }
             else
                 menu.Update();
@@ -239,6 +239,7 @@ namespace _3DGame
         private void GameEvents_CharacterDied(Character obj)
         {
             menu.Header = "You died";
+            menu.SetUnActive("Resume");
             gameState = GameState.Menu;
 
         }
@@ -254,30 +255,15 @@ namespace _3DGame
         }
         private void Start_Click(object sender, EventArgs e)
         {
-            menu.Header=string.Empty;
+            menu.Header = string.Empty;
             StartGame();
             boxes = new List<Box>();
             gameState = GameState.Game;
-            for (int i = 0; i < menu.Items.Count; i++)
-            {
-                if (menu.Items[i].Name == "Resume")
-                {
-                    menu.Items[i].Active = true;
-                    return;
-                }
-            }
+            menu.SetActive("Resume");
         }
         private void Resume_Click(object sender, EventArgs e)
         {
             gameState = GameState.Game;
-            for (int i = 0; i < menu.Items.Count; i++)
-            {
-                if (menu.Items[i].Name == "Resume")
-                {
-                    menu.Items[i].Active = false;
-                    return;
-                }
-            }
         }
 
 
@@ -285,7 +271,9 @@ namespace _3DGame
         private void UpdateGame(GameTime gameTime)
         {
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
+            {
                 gameState = GameState.Menu;
+            }
             else
                 character.Update(gameTime);
             for (int i = 0; i < boxes.Count; i++)

@@ -24,6 +24,8 @@ namespace _3DGame
             
         }
 
+        #region Methods
+
         public void LoadContent(ContentManager Content)
         {
             font = Content.Load<SpriteFont>("TextFont");
@@ -48,6 +50,7 @@ namespace _3DGame
 
         public void Draw(SpriteBatch spriteBatch)
         {
+            spriteBatch.GraphicsDevice.Clear(Color.Black);
             spriteBatch.Begin(SpriteSortMode.Deferred,
                 BlendState.AlphaBlend,
                 SamplerState.LinearClamp,
@@ -64,7 +67,7 @@ namespace _3DGame
 
                 spriteBatch.DrawString(font,
                     menuItem.Name,
-                    new Vector2(10,y),
+                    new Vector2(10, y),
                     color);
                 y += 20;
             }
@@ -77,7 +80,19 @@ namespace _3DGame
             spriteBatch.End();
         }
 
-        #region 
+        public void SetActive(string itemName)
+        {
+            Items.Find(g => g.Name == itemName).Active = true;
+        }
+        public void SetUnActive(string itemName)
+        {
+            Items.Find(g => g.Name == itemName).Active = false;
+        }
+
+        #endregion
+
+
+        #region Properties
 
         public int CurrentItem
         {
