@@ -4,8 +4,9 @@
   <Platform>Windows</Platform>
   <Config />
   <SourceFiles>
-    <File>C:/Users/diman/Documents/visual studio 2015/Projects/3DGame/3DGame/Content/roadV2.fbx</File>
-    <File>C:/Users/diman/Documents/visual studio 2015/Projects/3DGame/3DGame/Content/sinon.fbx</File>
-    <File>C:/Users/diman/Documents/visual studio 2015/Projects/3DGame/3DGame/Content/QB.fbx</File>
+    <File>C:/Users/diman/Source/Repos/3DGame/3DGame/Content/roadV2.fbx</File>
+    <File>C:/Users/diman/Source/Repos/3DGame/3DGame/Content/sinon.fbx</File>
+    <File>C:/Users/diman/Source/Repos/3DGame/3DGame/Content/QB.fbx</File>
+    <File>C:/Users/diman/Source/Repos/3DGame/3DGame/Content/TextFont.spritefont</File>
   </SourceFiles>
 </SourceFileCollection>

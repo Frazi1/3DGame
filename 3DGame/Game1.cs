@@ -15,6 +15,10 @@ namespace _3DGame
     public class Game1: Game
     {
         GraphicsDeviceManager graphics;
+        SpriteFont textFont;
+        SpriteBatch spriteBatch;
+
+
         Character character;
         Camera camera;
         List<Road> roads = new List<Road>();
@@ -37,8 +41,8 @@ namespace _3DGame
                 PreferMultiSampling = true,
                 PreferredBackBufferHeight = 800,
                 PreferredBackBufferWidth = 1000,
-                SynchronizeWithVerticalRetrace = true,
-                PreferredDepthStencilFormat = DepthFormat.Depth24Stencil8
+                //SynchronizeWithVerticalRetrace = true,
+                //PreferredDepthStencilFormat = DepthFormat.Depth24Stencil8
 
             };
             //graphics.PreferredBackBufferHeight = GraphicsDevice.Viewport.Height;
@@ -89,10 +93,12 @@ namespace _3DGame
 
             //Level
             level = new Level();
+
+            spriteBatch = new SpriteBatch(GraphicsDevice);
         }
         protected override void LoadContent()
         {
-
+            textFont = Content.Load<SpriteFont>("TextFont");
         }
         protected override void UnloadContent()
         {
@@ -114,8 +120,8 @@ namespace _3DGame
             collided = Collider.CollisionDetection(character, boxes);
             level.Update(gameTime);
             SpawnBlocks(gameTime);
-            SetDebugText(level.CurrentLevel + " - "+ boxes.Count);
-
+            //SetDebugText(level.CurrentLevel + " - " + boxes.Count);
+            //SetDebugText(character.Position.ToString());
 
 
 
@@ -124,40 +130,34 @@ namespace _3DGame
         }
         protected override void Draw(GameTime gameTime)
         {
+
             GraphicsDevice.Clear(Color.CornflowerBlue);
-
-
-            //RasterizerState rasterizerState = new RasterizerState();
-            //rasterizerState.CullMode = CullMode.None;
-            //GraphicsDevice.RasterizerState = rasterizerState;
-
             DrawRoads();
-
-            //Matrix characterTransormsMatrix = character.RotationMatrix 
-            //    * Matrix.CreateTranslation(character.Position) 
-            //    * Matrix.CreateScale(Character_Scale);
-            //character.World = characterTransormsMatrix;
-
-
-
             character.DrawModel(camera);
-            character.DrawBoundingSphere(camera);
+            //character.DrawBoundingSphere(camera);
 
             for (int i = 0; i < boxes.Count; i++)
             {
                 var box = boxes[i];
                 if (!box.IsActive)
                     continue;
-                //Matrix boxTransformsMatrix = box.RotationMatrix 
-                //    * Matrix.CreateTranslation(box.Position) 
-                //    * Matrix.CreateScale(/*0.0001f*/Character_Scale);
-                //box.World = boxTransformsMatrix;
 
                 box.DrawModel(camera);
 
-                box.DrawBoundingSphere(camera);
                 //box.DrawBoundingSphere(camera);
             }
+
+            spriteBatch.Begin(SpriteSortMode.Deferred,
+                BlendState.AlphaBlend,
+                SamplerState.LinearClamp,
+                DepthStencilState.Default,
+                RasterizerState.CullNone);
+            spriteBatch.DrawString(textFont,
+                "Health:" + character.CurrentHealth,
+                new Vector2(1, 1),
+                Color.Black
+                );
+            spriteBatch.End();
 
             base.Draw(gameTime);
         }
@@ -200,18 +200,6 @@ namespace _3DGame
         }
 
         //Debug Methods
-        private void Reset()
-        {
-            if (Keyboard.GetState().IsKeyDown(Keys.Enter))
-                for (int i = 0; i < boxes.Count; i++)
-                {
-                    boxes[i].IsActive = true;
-                }
-            if (Keyboard.GetState().IsKeyDown(Keys.K))
-                boxes.Add(GameObjectCreator.CreateBox(
-                    GameObjectCreator.GetRandomPosition(),
-                    character.Position));
-        }
         private void SetDebugText(string text)
         {
             Window.Title = text;
@@ -229,7 +217,7 @@ namespace _3DGame
         }
         private void GameEvents_CharacterDied(Character obj)
         {
-            //throw new NotImplementedException();
+            Exit();
         }
         private void GameEvents_CharacterHit(Character arg1, IGameObject arg2)
         {
@@ -241,22 +229,16 @@ namespace _3DGame
         //GameLogic
         private void SpawnBlocks(GameTime gameTime)
         {
-            int number = 0;
-            if (level.CurrentLevel % 5 == 0)
-                number = level.CurrentLevel * 10;
-            else
-                number = level.CurrentLevel;
+            //int number = level.CurrentLevel * 3;
 
-            if (level.ElapsedBlockSpawned.Seconds >= Settings.BoxSpawning_Interval)
+            if (!level.BoxSpawned)
             {
-                for (int i = 0; i < number; i++)
-                {
                     boxes.Add(GameObjectCreator.CreateBox(
-                        GameObjectCreator.GetRandomPosition(),
+                        GameObjectCreator.GetRandomPosition(gameTime),
                         character.Position));
-                }
-                level.ElapsedBlockSpawned = new TimeSpan();
-            }
+                level.BoxSpawnedNumber++;
+                //level.ElapsedBoxSpawned = new TimeSpan();
+            }            
 
         }
 

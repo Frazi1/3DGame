@@ -26,7 +26,8 @@ namespace _3DGame
 
             box.Initialize(ContentManager);
             return box;
-        }public static Box CreateBox(Vector3 position, Vector3 target)
+        }
+        public static Box CreateBox(Vector3 position, Vector3 target)
         {
             //Box box = new Box { Position = new Vector3(Settings.XOffset, 0, 0) };
 
@@ -40,16 +41,19 @@ namespace _3DGame
             return box;
         }
 
-        public static Vector3 GetRandomPosition()
+        public static Vector3 GetRandomPosition(GameTime gameTime)
         {
-            Vector3 boxPosition;
-            Random rnd = new Random();
+            Random rnd = new Random(gameTime.TotalGameTime.Milliseconds);
 
-            float x = rnd.Next((int) BoxSpawning_Min_XOffset, (int) BoxSpawning_Max_XOffset);
-            float y = rnd.Next((int)BoxSpawning_Min_YOffset, (int)BoxSpawning_Max_YOffset);
-            float z = rnd.Next((int) BoxSpawning_Min_ZOffset, (int) BoxSpawning_Max_ZOffset);
+            int _x = rnd.Next((int)BoxSpawning_Min_XOffset, (int)BoxSpawning_Max_XOffset);
+            int _y = rnd.Next((int)BoxSpawning_Min_YOffset, (int)BoxSpawning_Max_YOffset);
+            int _z = rnd.Next((int)BoxSpawning_Min_ZOffset, (int)BoxSpawning_Max_ZOffset);
 
-            boxPosition = new Vector3(x,y,z);
+            float x = (float)(_x * rnd.NextDouble());
+            float y = (float)(_y);
+            float z = (float)(_z * rnd.NextDouble());
+
+            var boxPosition = new Vector3(x, y, z);
 
             return boxPosition;
         }

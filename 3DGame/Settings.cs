@@ -29,30 +29,42 @@ namespace _3DGame
 
         //Coords
         public static float CharacterBoxSpawning_Distance = 10f;
-        public static float BoxSpawning_Max_ZOffset = 100f;
-        public static float BoxSpawning_Max_XOffset = 100f;
-        public static float BoxSpawning_Max_YOffset = 30f;
-        public static float BoxSpawning_Min_ZOffset = 70f;
+        //public static float BoxSpawning_Max_ZOffset = 100f;
+        //public static float BoxSpawning_Max_XOffset = 100f;
+        //public static float BoxSpawning_Max_YOffset = 30f;
+        //public static float BoxSpawning_Min_ZOffset = 70f;
+        //public static float BoxSpawning_Min_XOffset = 0f;
+        //public static float BoxSpawning_Min_YOffset = 0f;
+
         public static float BoxSpawning_Min_XOffset = 0f;
-        public static float BoxSpawning_Min_YOffset = 0f;
+        public static float BoxSpawning_Max_XOffset = 50f;
+        public static float BoxSpawning_Min_YOffset = 1f;
+        public static float BoxSpawning_Max_YOffset = 1f;
+        public static float BoxSpawning_Min_ZOffset = 5f;
+        public static float BoxSpawning_Max_ZOffset = 10f;
 
 
         //Moving Settings
         public static float Box_Velocity = 0.01f;
         public static float Box_Max_Speed = 0.3f;
-        public static float Box_Living_Time = 20f;
+        public static float Box_Living_Time = 10f;
 
 
         //Player Constants
         public static int Character_Max_Heath = 3;
         public static float Camera_Distance = 100f;
-        public static float Camera_Heigth = 100f;
+        public static float Camera_Heigth = 50f;
 
         //Level Settings
         public static float FirstLevel_Time = 3f;
-        public static float Level_TimeDelta = 2;
-        public static double BoxSpawning_Interval = 1;
+        public static float Level_TimeDelta = 1;
+        public static double BoxSpawning_Interval = 1.5;
 
+        //Position Borders
+        public static float BorderLeft = 20.5f;
+        public static float BorderRight = 1.6f;
+        public static float BorderForward = -21f;
+        public static float BorderBackward = -54f;
     }
 
 

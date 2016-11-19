@@ -14,10 +14,10 @@ namespace _3DGame
         private BoundingBox boundingBox;
         private BoundingSphere boundingSphere;
 
-        private float speed = 0;
-        private float velocity = Settings.Box_Velocity;
+        private float speed;
+        private float velocity = Box_Velocity;
 
-        private float livingTime = 0;
+        private float livingTime;
         private TimeSpan livingTimeSpan;
 
         private bool isActive;
@@ -51,6 +51,9 @@ namespace _3DGame
             if (Direction == Vector3.Zero)
             {
                 direction = target - position;
+                //
+                direction.Y = 0;
+                //
                 direction.Normalize();
             }
 
@@ -61,7 +64,7 @@ namespace _3DGame
 
             //LivingTime += gameTime.ElapsedGameTime.;
             livingTimeSpan = livingTimeSpan.Add(gameTime.ElapsedGameTime);
-            if (livingTimeSpan.Seconds>= Settings.Box_Living_Time)
+            if (livingTimeSpan.Seconds>= Box_Living_Time)
                 IsActive = false;
         }
 
@@ -163,6 +166,8 @@ namespace _3DGame
             get { return livingTime; }
             set { livingTime = value; }
         }
+
+
 
         #endregion
 

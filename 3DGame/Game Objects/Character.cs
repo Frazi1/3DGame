@@ -59,20 +59,29 @@ namespace _3DGame
 
             if (Keyboard.GetState().IsKeyDown(Keys.W))
             {
-                Position += RotationMatrix.Forward * -amount;
+                Vector3 moveVector = RotationMatrix.Forward * -amount;
+                if ((Position + moveVector).CheckPositon())
+                    Position += moveVector;
+
+                //Position += RotationMatrix.Forward * - amount;
             }
             if (Keyboard.GetState().IsKeyDown(Keys.S))
             {
-                Position += RotationMatrix.Forward * amount;
-
+                Vector3 moveVector = RotationMatrix.Forward * amount;
+                if ((Position + moveVector).CheckPositon())
+                    Position += moveVector;
             }
             if (Keyboard.GetState().IsKeyDown(Keys.A))
             {
-                Position += Vector3.Cross(RotationMatrix.Up, RotationMatrix.Forward) * -amount;
+                Vector3 moveVector =  Vector3.Cross(RotationMatrix.Up, RotationMatrix.Forward) * -amount;
+                if ((Position + moveVector).CheckPositon())
+                    Position += moveVector;
             }
             if (Keyboard.GetState().IsKeyDown(Keys.D))
             {
-                Position += Vector3.Cross(RotationMatrix.Up, RotationMatrix.Forward) * amount;
+                Vector3 moveVector = Vector3.Cross(RotationMatrix.Up, RotationMatrix.Forward) * amount;
+                if ((Position + moveVector).CheckPositon())
+                    Position += moveVector;
 
             }
 
@@ -81,15 +90,15 @@ namespace _3DGame
                 Rotation += 1f / 500f * gameTime.ElapsedGameTime.Milliseconds;
                 RotationMatrix = Matrix.CreateRotationY(Rotation);
 
-                Direction = Vector3.Transform(direction, RotationMatrix );
-                
+                Direction = Vector3.Transform(direction, RotationMatrix);
+
             }
             if (Keyboard.GetState().IsKeyDown(Keys.E))
             {
                 Rotation -= 1f / 500f * gameTime.ElapsedGameTime.Milliseconds;
                 RotationMatrix = Matrix.CreateRotationY(Rotation);
-                
-                Direction =  Vector3.Transform(direction, RotationMatrix);
+
+                Direction = Vector3.Transform(direction, RotationMatrix);
             }
 
         }
@@ -194,7 +203,7 @@ namespace _3DGame
             set
             {
                 currentHealth = value;
-                if(currentHealth<=0)
+                if (currentHealth <= 0)
                     GameEvents.OnCharacterDied(this);
             }
         }
