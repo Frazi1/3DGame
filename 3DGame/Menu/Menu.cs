@@ -74,7 +74,8 @@ namespace _3DGame
 
             spriteBatch.DrawString(font,
                 Header,
-                new Vector2(300, 10),
+                new Vector2(x: spriteBatch.GraphicsDevice.Viewport.Width /2,
+                y: spriteBatch.GraphicsDevice.Viewport.Height/2),
                 Color.Red);
 
             spriteBatch.End();

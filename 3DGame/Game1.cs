@@ -39,16 +39,15 @@ namespace _3DGame
 
             graphics = new GraphicsDeviceManager(this)
             {
-                IsFullScreen = false,
+                IsFullScreen = true,
                 PreferMultiSampling = true,
-                PreferredBackBufferHeight = 800,
-                PreferredBackBufferWidth = 1000,
-                //SynchronizeWithVerticalRetrace = true,
-                //PreferredDepthStencilFormat = DepthFormat.Depth24Stencil8
+                SynchronizeWithVerticalRetrace = true,
+                //PreferredDepthStencilFormat = DepthFormat.Depth24Stencil8,
+                PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height,
+                PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width
 
             };
-            //graphics.PreferredBackBufferHeight = GraphicsDevice.Viewport.Height;
-            //graphics.PreferredBackBufferWidth = GraphicsDevice.Viewport.Width;
+
             Content.RootDirectory = "Content";
         }
 
@@ -74,6 +73,7 @@ namespace _3DGame
 
             //Set RasterizerState
             GraphicsDevice.RasterizerState = new RasterizerState { CullMode = CullMode.None };
+
 
             //Random
             rnd = new Random();
